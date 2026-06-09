@@ -1,4 +1,7 @@
 import type { ApiError, ApiSuccess } from '@mediklinik/types';
+import type { AuthContext } from './auth-context';
+import { parseAccessToken } from './token';
+import { runWithAuthContext } from './request-context';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -67,12 +70,15 @@ export class ApiRouter {
       }
 
       const body = await parseBody(request);
-      const result = await route.handler({
-        request,
-        params,
-        query: url.searchParams,
-        body,
-      });
+      const authContext = resolveAuthContext(request);
+      const result = await runWithAuthContext(authContext, () =>
+        route.handler({
+          request,
+          params,
+          query: url.searchParams,
+          body,
+        }),
+      );
 
       if (result instanceof Response) {
         return result;
@@ -97,6 +103,35 @@ export class ApiRouter {
       { status: 404 },
     );
   }
+}
+
+function resolveAuthContext(request: Request): AuthContext | null {
+  const authorizationHeader = request.headers.get('authorization');
+  if (authorizationHeader?.startsWith('Bearer ')) {
+    const token = authorizationHeader.slice('Bearer '.length).trim();
+    const payload = parseAccessToken(token);
+    if (payload?.sub && payload.email && payload.role && payload.clinicId) {
+      return {
+        userId: payload.sub,
+        clinicId: payload.clinicId,
+        role: payload.role,
+        subscriptionStatus: payload.subscriptionStatus ?? 'TRIAL',
+      };
+    }
+  }
+
+  const clinicId = request.headers.get('x-clinic-id');
+  if (clinicId) {
+    return {
+      userId: request.headers.get('x-user-id') ?? 'user_header',
+      clinicId,
+      role: (request.headers.get('x-role') as AuthContext['role']) ?? 'ADMIN',
+      subscriptionStatus:
+        (request.headers.get('x-subscription-status') as AuthContext['subscriptionStatus']) ?? 'TRIAL',
+    };
+  }
+
+  return null;
 }
 
 function matchPath(routePath: string, pathname: string) {

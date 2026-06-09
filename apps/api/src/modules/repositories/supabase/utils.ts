@@ -1,7 +1,14 @@
+import { getRequestClinicId } from '../../shared/supabase-client';
+
 export function requireClinicId() {
+  const clinicIdFromRequest = getRequestClinicId();
+  if (clinicIdFromRequest) {
+    return clinicIdFromRequest;
+  }
+
   const clinicId = process.env.DEFAULT_CLINIC_ID;
   if (!clinicId) {
-    throw new Error('DEFAULT_CLINIC_ID wajib diisi untuk repository Supabase.');
+    throw new Error('Clinic context tidak ditemukan. Kirim Authorization Bearer token yang memuat clinicId atau gunakan x-clinic-id untuk bridge lokal.');
   }
 
   return clinicId;

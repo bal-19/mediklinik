@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { shouldUseSupabase } from '../config/repository-provider';
+import { getAuthContext } from './request-context';
 
 let client: SupabaseClient | null = null;
 
@@ -30,4 +31,8 @@ export function getSupabaseAdminClient() {
 
 export function canUseSupabaseRepositories() {
   return shouldUseSupabase() && hasSupabaseConfig();
+}
+
+export function getRequestClinicId() {
+  return getAuthContext()?.clinicId ?? null;
 }

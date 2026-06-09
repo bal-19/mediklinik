@@ -1,4 +1,5 @@
 import type { AuthSession, JwtPayload, Role } from '@mediklinik/types';
+import { createAccessToken } from '../shared/token';
 
 export interface LoginInput {
   email: string;
@@ -24,7 +25,11 @@ export class AuthService {
     };
 
     return {
-      accessToken: `access_${payload.sub}`,
+      accessToken: createAccessToken({
+        ...payload,
+        clinicId: 'clinic_demo',
+        subscriptionStatus: 'TRIAL',
+      }),
       refreshToken: `refresh_${payload.sub}`,
       user: {
         id: payload.sub,
@@ -39,7 +44,15 @@ export class AuthService {
 
   register(input: RegisterInput): AuthSession {
     return {
-      accessToken: `access_${input.email}`,
+      accessToken: createAccessToken({
+        sub: 'user_new',
+        email: input.email,
+        role: input.role,
+        clinicId: input.clinicId ?? 'clinic_new',
+        subscriptionStatus: 'TRIAL',
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 900,
+      }),
       refreshToken: `refresh_${input.email}`,
       user: {
         id: 'user_new',
@@ -53,8 +66,17 @@ export class AuthService {
   }
 
   refresh(refreshToken: string): Pick<AuthSession, 'accessToken' | 'refreshToken'> {
+    const now = Math.floor(Date.now() / 1000);
     return {
-      accessToken: `${refreshToken}_rotated_access`,
+      accessToken: createAccessToken({
+        sub: 'user_demo',
+        email: 'admin@mediklinik.id',
+        role: 'ADMIN',
+        clinicId: 'clinic_demo',
+        subscriptionStatus: 'TRIAL',
+        iat: now,
+        exp: now + 900,
+      }),
       refreshToken: `${refreshToken}_rotated`,
     };
   }

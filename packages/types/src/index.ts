@@ -12,6 +12,8 @@ export interface JwtPayload {
   role: Role;
   iat: number;
   exp: number;
+  clinicId?: string;
+  subscriptionStatus?: SubscriptionStatus;
 }
 
 export interface ApiSuccess<T> {
