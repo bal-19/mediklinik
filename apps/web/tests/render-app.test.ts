@@ -13,4 +13,10 @@ describe('renderApp', () => {
     expect(markup.includes('Klinik Sehat Sentosa')).toBe(true);
     expect(markup.includes('Daftar Antrian')).toBe(true);
   });
+
+  test('renders blocked billing page when subscription expired', () => {
+    const markup = renderApp('/app/billing/blocked');
+    expect(markup.includes('Masa langganan Anda telah berakhir')).toBe(true);
+    expect(markup.includes('Buka Halaman Billing')).toBe(true);
+  });
 });

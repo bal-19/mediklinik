@@ -107,3 +107,79 @@ export interface SubscriptionPaymentSummary {
   periodEnd: string;
   paidAt: string | null;
 }
+
+export interface LowStockAlert {
+  medicineId: string;
+  medicineName: string;
+  stockQuantity: number;
+  minStockAlert: number;
+}
+
+export interface MedicineSummary {
+  id: string;
+  clinicId: string;
+  name: string;
+  unit: string;
+  stockQuantity: number;
+  minStockAlert: number;
+  purchasePrice: number;
+  sellPrice: number;
+  isActive: boolean;
+}
+
+export interface StockMutationSummary {
+  id: string;
+  clinicId: string;
+  medicineId: string;
+  type: 'IN' | 'OUT';
+  quantity: number;
+  referenceId: string | null;
+  notes: string;
+  createdAt: string;
+}
+
+export interface MedicalRecordSummary {
+  id: string;
+  clinicId: string;
+  patientId: string;
+  doctorId: string;
+  queueId: string | null;
+  chiefComplaint: string;
+  diagnosis: string;
+  notes: string;
+  createdAt: string;
+  lockedAt: string | null;
+}
+
+export interface InvoiceSummary {
+  id: string;
+  clinicId: string;
+  patientId: string;
+  medicalRecordId: string | null;
+  totalAmount: number;
+  status: InvoiceStatus;
+  paymentMethod: string | null;
+  midtransOrderId: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  items: InvoiceItemSummary[];
+}
+
+export interface VisitReportPoint {
+  month: string;
+  totalVisits: number;
+}
+
+export interface RevenueReportPoint {
+  month: string;
+  totalRevenue: number;
+}
+
+export interface DashboardSummary {
+  todayQueueNumber: string;
+  activeQueueCount: number;
+  totalPatientsToday: number;
+  todayRevenue: number;
+  lowStockAlerts: LowStockAlert[];
+  subscription: SubscriptionSummary;
+}

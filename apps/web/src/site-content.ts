@@ -108,3 +108,36 @@ export const dashboardNavigationByRole = {
     ],
   },
 } as const;
+
+export const dashboardSnapshot = {
+  todayQueueNumber: 'A-023',
+  activeQueueCount: 3,
+  totalPatientsToday: 23,
+  todayRevenue: 4250000,
+  daysRemaining: 14,
+  lowStockAlerts: [
+    { medicineName: 'Amoxicillin', stockQuantity: 8, minStockAlert: 10 },
+    { medicineName: 'Cefixime', stockQuantity: 4, minStockAlert: 8 },
+  ],
+  queueItems: [
+    { queueNumber: 'A-021', status: 'WAITING', patient: 'Siti Nurhaliza' },
+    { queueNumber: 'A-022', status: 'CALLED', patient: 'Budi Santoso' },
+    { queueNumber: 'A-023', status: 'IN_PROGRESS', patient: 'Ayu Permata' },
+  ],
+  medicines: [
+    { name: 'Amoxicillin', stockQuantity: 8, minStockAlert: 10, unit: 'strip' },
+    { name: 'Paracetamol', stockQuantity: 42, minStockAlert: 15, unit: 'strip' },
+    { name: 'Vitamin C', stockQuantity: 17, minStockAlert: 12, unit: 'botol' },
+  ],
+  invoices: [
+    { id: 'INV-001', patient: 'Siti Nurhaliza', amount: 156000, status: 'UNPAID' },
+    { id: 'INV-002', patient: 'Budi Santoso', amount: 98000, status: 'PAID' },
+  ],
+  records: [
+    { patient: 'Siti Nurhaliza', diagnosis: 'ISPA', doctor: 'dr. Rani Kusuma' },
+  ],
+  reports: {
+    visits: ['Jan 122', 'Feb 134', 'Mar 148', 'Apr 140', 'Mei 164', 'Jun 171'],
+    revenue: ['Jan 12.4jt', 'Feb 13.6jt', 'Mar 14.2jt', 'Apr 13.9jt', 'Mei 15.6jt', 'Jun 16.8jt'],
+  },
+};

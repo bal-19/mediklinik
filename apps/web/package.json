@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json && bunx vite build",
     "lint": "tsc -p tsconfig.json --noEmit",
     "preview": "bunx vite preview",
-    "test": "bun test",
+    "test": "bun test ./tests/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
