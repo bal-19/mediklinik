@@ -33,6 +33,13 @@ export function registerClinicRoutes(router: ApiRouter) {
     },
   );
 
+  router.get('/clinics', async () => ok(await clinicsService.listAccessibleClinics()), {
+    summary: 'List accessible clinics',
+    description: 'SUPER_ADMIN dapat melihat semua klinik. Role tenant lain hanya melihat klinik aktifnya.',
+    tags: ['Clinics'],
+    auth: 'bearer',
+  });
+
   router.get('/clinics/me', () => ok(clinicsService.getCurrentClinic()), {
     summary: 'Get active clinic',
     tags: ['Clinics'],

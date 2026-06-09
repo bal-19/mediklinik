@@ -16,10 +16,11 @@ export interface RegisterInput {
 
 export class AuthService {
   login(input: LoginInput): AuthSession {
+    const isSuperAdmin = input.email === 'superadmin@mediklinik.id';
     const payload: JwtPayload = {
       sub: 'user_demo',
       email: input.email,
-      role: 'ADMIN',
+      role: isSuperAdmin ? 'SUPER_ADMIN' : 'ADMIN',
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 900,
     };
@@ -27,15 +28,15 @@ export class AuthService {
     return {
       accessToken: createAccessToken({
         ...payload,
-        clinicId: 'clinic_demo',
+        clinicId: isSuperAdmin ? undefined : 'clinic_demo',
         subscriptionStatus: 'TRIAL',
       }),
       refreshToken: `refresh_${payload.sub}`,
       user: {
         id: payload.sub,
-        clinicId: 'clinic_demo',
+        clinicId: isSuperAdmin ? null : 'clinic_demo',
         email: payload.email,
-        fullName: 'Admin Demo',
+        fullName: isSuperAdmin ? 'Super Admin Demo' : 'Admin Demo',
         role: payload.role,
         subscriptionStatus: 'TRIAL',
       },
@@ -43,12 +44,13 @@ export class AuthService {
   }
 
   register(input: RegisterInput): AuthSession {
+    const clinicId = input.role === 'SUPER_ADMIN' ? null : (input.clinicId ?? 'clinic_new');
     return {
       accessToken: createAccessToken({
         sub: 'user_new',
         email: input.email,
         role: input.role,
-        clinicId: input.clinicId ?? 'clinic_new',
+        clinicId: clinicId ?? undefined,
         subscriptionStatus: 'TRIAL',
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 900,
@@ -56,7 +58,7 @@ export class AuthService {
       refreshToken: `refresh_${input.email}`,
       user: {
         id: 'user_new',
-        clinicId: input.clinicId ?? 'clinic_new',
+        clinicId,
         email: input.email,
         fullName: input.fullName,
         role: input.role,

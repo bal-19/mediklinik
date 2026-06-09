@@ -11,6 +11,7 @@ export class PushService {
   async subscribe(input: PushSubscriptionInput) {
     const auth = getAuthContext();
     if (!auth) throw new Error('Auth context dibutuhkan.');
+    if (!auth.clinicId) throw new Error('Clinic context dibutuhkan untuk menyimpan push subscription.');
     if (canUseSupabaseRepositories()) {
       const { error } = await getSupabaseAdminClient().from('push_subscriptions').upsert({
         user_id: auth.userId, clinic_id: auth.clinicId, endpoint: input.endpoint, p256dh: input.keys.p256dh, auth: input.keys.auth,

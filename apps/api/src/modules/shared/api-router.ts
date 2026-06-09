@@ -146,10 +146,10 @@ function resolveAuthContext(request: Request): AuthContext | null {
   if (authorizationHeader?.startsWith('Bearer ')) {
     const token = authorizationHeader.slice('Bearer '.length).trim();
     const payload = parseAccessToken(token);
-    if (payload?.sub && payload.email && payload.role && payload.clinicId) {
+    if (payload?.sub && payload.email && payload.role) {
       return {
         userId: payload.sub,
-        clinicId: payload.clinicId,
+        clinicId: payload.clinicId ?? null,
         role: payload.role,
         subscriptionStatus: payload.subscriptionStatus ?? 'TRIAL',
       };

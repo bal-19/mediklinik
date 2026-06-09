@@ -16,4 +16,19 @@ describe('AuthService', () => {
     expect(result.user.role).toBe('ADMIN');
     expect(payload?.clinicId).toBe('clinic_demo');
   });
+
+  test('super admin token can omit clinic context', () => {
+    const service = new AuthService();
+    const result = service.register({
+      email: 'superadmin@mediklinik.id',
+      password: 'secret',
+      fullName: 'Super Admin',
+      role: 'SUPER_ADMIN',
+    });
+    const payload = parseAccessToken(result.accessToken);
+
+    expect(result.user.role).toBe('SUPER_ADMIN');
+    expect(result.user.clinicId).toBeNull();
+    expect(payload?.clinicId).toBeUndefined();
+  });
 });

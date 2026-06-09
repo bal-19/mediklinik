@@ -30,7 +30,7 @@ export interface ApiError {
 
 export interface DashboardUser {
   id: string;
-  clinicId: string;
+  clinicId: string | null;
   email: string;
   fullName: string;
   role: Role;
