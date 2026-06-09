@@ -7,7 +7,7 @@
     "dev": "bun --watch src/main.ts",
     "build": "tsc -p tsconfig.json",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "swagger": "echo 'Swagger generation will be wired after NestJS module bootstrap is connected.'",
+    "swagger": "echo 'OpenAPI JSON: /openapi.json | Scalar docs: /docs'",
     "test": "bun test ./tests/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
