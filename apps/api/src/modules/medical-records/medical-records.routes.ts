@@ -9,10 +9,12 @@ export function registerMedicalRecordRoutes(router: ApiRouter) {
     summary: 'List patient medical records',
     tags: ['Medical Records'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/medical-records/detail/:id', async ({ params }) => ok(await medicalRecordsService.getById(params.id ?? 'mr_1')), {
     summary: 'Get medical record detail',
     tags: ['Medical Records'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
 }

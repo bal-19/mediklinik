@@ -37,6 +37,7 @@ export function registerClinicRoutes(router: ApiRouter) {
     summary: 'Get active clinic',
     tags: ['Clinics'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/clinics/me/subscription', () => ok(clinicsService.getSubscription()), {
     summary: 'Get subscription status',
@@ -47,11 +48,13 @@ export function registerClinicRoutes(router: ApiRouter) {
     summary: 'Update clinic settings',
     tags: ['Clinics'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.put('/clinics/me/public-page', () => ok(clinicsService.getPublicPage(), 'Halaman publik diperbarui'), {
     summary: 'Update public clinic page',
     tags: ['Clinics'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.put(
     '/clinics/me/midtrans',
@@ -67,6 +70,7 @@ export function registerClinicRoutes(router: ApiRouter) {
       description: 'Simpan credential Midtrans klinik secara terenkripsi. Frontend hanya menerima status setup.',
       tags: ['Clinics'],
       auth: 'bearer',
+      subscriptionRequired: true,
     },
   );
 
@@ -81,5 +85,6 @@ export function registerClinicRoutes(router: ApiRouter) {
     summary: 'Subscription guard probe',
     tags: ['Clinics'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
 }

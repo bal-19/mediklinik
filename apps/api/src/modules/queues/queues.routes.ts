@@ -10,11 +10,13 @@ export function registerQueueRoutes(router: ApiRouter) {
     summary: 'List today queues',
     tags: ['Queues'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.post('/queues/register', async ({ body }) => ok(await queuesService.register(parseRegisterQueueBody(body)), 'Nomor antrian berhasil dibuat'), {
     summary: 'Register queue from app',
     tags: ['Queues'],
     auth: 'bearer',
+    subscriptionRequired: true,
     requestBody: {
       required: true,
       content: {
@@ -34,11 +36,13 @@ export function registerQueueRoutes(router: ApiRouter) {
     summary: 'Call next queue',
     tags: ['Queues'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.patch('/queues/:id/status', async ({ params, body }) => ok(await queuesService.updateStatus(requireParam(params.id, 'id'), parseQueueStatusBody(body)), 'Status antrian diperbarui'), {
     summary: 'Update queue status',
     tags: ['Queues'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
 }
 

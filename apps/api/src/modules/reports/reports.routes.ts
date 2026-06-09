@@ -9,10 +9,12 @@ export function registerReportRoutes(router: ApiRouter) {
     summary: 'Get visits report',
     tags: ['Reports'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/reports/revenue', async () => ok(await reportsService.getRevenue()), {
     summary: 'Get revenue report',
     tags: ['Reports'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
 }

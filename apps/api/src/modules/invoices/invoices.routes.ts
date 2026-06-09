@@ -10,16 +10,19 @@ export function registerInvoiceRoutes(router: ApiRouter) {
     summary: 'List invoices',
     tags: ['Invoices'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/invoices/:id', async ({ params }) => ok(await invoicesService.getById(params.id ?? 'inv_1')), {
     summary: 'Get invoice detail',
     tags: ['Invoices'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.post('/invoices', async ({ body }) => ok(await invoicesService.createFromMedicalRecord(parseCreateInvoiceBody(body).medicalRecordId), 'Invoice berhasil dibuat'), {
     summary: 'Create invoice from medical record',
     tags: ['Invoices'],
     auth: 'bearer',
+    subscriptionRequired: true,
     requestBody: {
       required: true,
       content: {
@@ -39,6 +42,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
     summary: 'Pay invoice by cash',
     tags: ['Invoices'],
     auth: 'bearer',
+    subscriptionRequired: true,
     requestBody: {
       required: true,
       content: {
@@ -62,6 +66,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
       description: 'Buat transaksi Midtrans Snap untuk invoice pasien menggunakan credential Midtrans milik klinik aktif.',
       tags: ['Invoices'],
       auth: 'bearer',
+      subscriptionRequired: true,
     },
   );
 }

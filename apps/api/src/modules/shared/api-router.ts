@@ -10,6 +10,7 @@ export interface RouteMeta {
   description?: string;
   tags?: string[];
   auth?: 'bearer' | 'public';
+  subscriptionRequired?: boolean;
   operationId?: string;
   requestBody?: Record<string, unknown>;
   responses?: Record<string, unknown>;
@@ -69,8 +70,13 @@ export class ApiRouter {
         continue;
       }
 
-      const body = await parseBody(request);
       const authContext = resolveAuthContext(request);
+      const accessError = validateRouteAccess(route, authContext);
+      if (accessError) {
+        return accessError;
+      }
+
+      const body = await parseBody(request);
       const result = await runWithAuthContext(authContext, () =>
         route.handler({
           request,
@@ -103,6 +109,32 @@ export class ApiRouter {
       { status: 404 },
     );
   }
+}
+
+function validateRouteAccess(route: RouteDefinition, authContext: AuthContext | null) {
+  if (route.meta?.auth === 'bearer' && !authContext) {
+    return Response.json(
+      {
+        success: false,
+        message: 'Unauthorized. Bearer token valid dibutuhkan untuk endpoint ini.',
+      },
+      { status: 401 },
+    );
+  }
+
+  if (route.meta?.subscriptionRequired && authContext) {
+    if (authContext.subscriptionStatus !== 'TRIAL' && authContext.subscriptionStatus !== 'ACTIVE') {
+      return Response.json(
+        {
+          success: false,
+          message: 'Masa langganan Anda telah berakhir. Perpanjang untuk melanjutkan.',
+        },
+        { status: 403 },
+      );
+    }
+  }
+
+  return null;
 }
 
 function resolveAuthContext(request: Request): AuthContext | null {

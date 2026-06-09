@@ -10,21 +10,25 @@ export function registerMedicineRoutes(router: ApiRouter) {
     summary: 'List medicines',
     tags: ['Medicines'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/medicines/low-stock', async () => ok(await medicinesService.getLowStock()), {
     summary: 'List low stock alerts',
     tags: ['Medicines'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.get('/medicines/:id/mutations', async () => ok(await medicinesService.getMutations()), {
     summary: 'List stock mutations for medicine',
     tags: ['Medicines'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
   router.post('/medicines/:id/stock-in', async ({ params, body }) => ok(await medicinesService.stockIn(requireParam(params.id, 'id'), parseStockInBody(body)), 'Stok obat berhasil ditambahkan'), {
     summary: 'Add medicine stock',
     tags: ['Medicines'],
     auth: 'bearer',
+    subscriptionRequired: true,
     requestBody: {
       required: true,
       content: {

@@ -9,5 +9,6 @@ export function registerDashboardRoutes(router: ApiRouter) {
     summary: 'Get dashboard summary',
     tags: ['Dashboard'],
     auth: 'bearer',
+    subscriptionRequired: true,
   });
 }
