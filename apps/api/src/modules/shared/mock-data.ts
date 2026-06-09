@@ -1,13 +1,18 @@
 import type {
+  CreateQueueInput,
   DashboardSummary,
+  InvoiceItemSummary,
   InvoiceSummary,
   LowStockAlert,
   MedicalRecordSummary,
   MedicineSummary,
+  PayCashInput,
   QueueItemSummary,
   RevenueReportPoint,
+  StockInInput,
   StockMutationSummary,
   SubscriptionSummary,
+  UpdateQueueStatusInput,
   VisitReportPoint,
 } from '@mediklinik/types';
 
@@ -183,12 +188,156 @@ export function getLowStockAlerts(): LowStockAlert[] {
 }
 
 export function getDashboardSummary(): DashboardSummary {
+  const currentQueue = [...queues]
+    .sort((left, right) => left.queueNumber.localeCompare(right.queueNumber))
+    .find((item) => item.status === 'IN_PROGRESS' || item.status === 'CALLED' || item.status === 'WAITING');
+
   return {
-    todayQueueNumber: 'A-023',
+    todayQueueNumber: currentQueue?.queueNumber ?? 'A-000',
     activeQueueCount: queues.filter((item) => item.status !== 'DONE' && item.status !== 'SKIP').length,
     totalPatientsToday: queues.length,
     todayRevenue: invoices.reduce((total, invoice) => total + invoice.totalAmount, 0),
     lowStockAlerts: getLowStockAlerts(),
     subscription,
   };
+}
+
+export function createQueue(input: CreateQueueInput) {
+  const highestQueueNumber = queues.reduce((highest, item) => {
+    const number = Number(item.queueNumber.split('-')[1] ?? '0');
+    return Math.max(highest, number);
+  }, 0);
+
+  const nextNumber = highestQueueNumber + 1;
+  const queue: QueueItemSummary = {
+    id: `queue_${nextNumber}`,
+    clinicId: 'clinic_demo',
+    patientId: input.patientId,
+    queueNumber: `A-${String(nextNumber).padStart(3, '0')}`,
+    status: 'WAITING',
+    date: '2026-06-09',
+    calledAt: null,
+    doneAt: null,
+  };
+
+  queues.push(queue);
+  return queue;
+}
+
+export function callNextQueue() {
+  const currentInProgress = queues.find((item) => item.status === 'IN_PROGRESS');
+  if (currentInProgress) {
+    currentInProgress.status = 'DONE';
+    currentInProgress.doneAt = new Date().toISOString();
+  }
+
+  const waitingQueue = queues.find((item) => item.status === 'WAITING');
+  if (!waitingQueue) {
+    throw new Error('Tidak ada antrian yang menunggu.');
+  }
+
+  waitingQueue.status = 'CALLED';
+  waitingQueue.calledAt = new Date().toISOString();
+  return waitingQueue;
+}
+
+export function updateQueueStatus(queueId: string, input: UpdateQueueStatusInput) {
+  const queue = queues.find((item) => item.id === queueId);
+  if (!queue) {
+    throw new Error('Antrian tidak ditemukan.');
+  }
+
+  queue.status = input.status;
+  if (input.status === 'CALLED' && !queue.calledAt) {
+    queue.calledAt = new Date().toISOString();
+  }
+  if (input.status === 'DONE') {
+    queue.doneAt = new Date().toISOString();
+  }
+
+  return queue;
+}
+
+export function stockInMedicine(medicineId: string, input: StockInInput) {
+  const medicine = medicines.find((item) => item.id === medicineId);
+  if (!medicine) {
+    throw new Error('Obat tidak ditemukan.');
+  }
+
+  medicine.stockQuantity += input.quantity;
+
+  const mutation: StockMutationSummary = {
+    id: `mut_${stockMutations.length + 1}`,
+    clinicId: medicine.clinicId,
+    medicineId,
+    type: 'IN',
+    quantity: input.quantity,
+    referenceId: null,
+    notes: input.notes,
+    createdAt: new Date().toISOString(),
+  };
+
+  stockMutations.unshift(mutation);
+
+  return {
+    medicine,
+    mutation,
+  };
+}
+
+export function payInvoiceCash(invoiceId: string, input: PayCashInput) {
+  const invoice = invoices.find((item) => item.id === invoiceId);
+  if (!invoice) {
+    throw new Error('Invoice tidak ditemukan.');
+  }
+
+  invoice.status = input.amountPaid >= invoice.totalAmount ? 'PAID' : 'PARTIAL';
+  invoice.paymentMethod = 'CASH';
+  invoice.paidAt = new Date().toISOString();
+
+  return invoice;
+}
+
+export function createInvoiceFromMedicalRecord(medicalRecordId: string) {
+  const record = medicalRecords.find((item) => item.id === medicalRecordId);
+  if (!record) {
+    throw new Error('Rekam medis tidak ditemukan.');
+  }
+
+  const items: InvoiceItemSummary[] = [
+    {
+      id: `item_${Date.now()}_1`,
+      description: 'Konsultasi Dokter Umum',
+      quantity: 1,
+      unitPrice: 100000,
+      subtotal: 100000,
+    },
+    {
+      id: `item_${Date.now()}_2`,
+      description: 'Paket Obat Dasar',
+      quantity: 1,
+      unitPrice: 35000,
+      subtotal: 35000,
+    },
+  ];
+
+  const totalAmount = items.reduce((total, item) => total + item.subtotal, 0);
+  const nextId = invoices.length + 1;
+
+  const invoice: InvoiceSummary = {
+    id: `inv_${nextId}`,
+    clinicId: record.clinicId,
+    patientId: record.patientId,
+    medicalRecordId,
+    totalAmount,
+    status: 'UNPAID',
+    paymentMethod: null,
+    midtransOrderId: `klinik-sehat-INV-${String(nextId).padStart(3, '0')}`,
+    paidAt: null,
+    createdAt: new Date().toISOString(),
+    items,
+  };
+
+  invoices.unshift(invoice);
+  return invoice;
 }

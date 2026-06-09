@@ -1,5 +1,5 @@
-import type { InvoiceSummary } from '@mediklinik/types';
-import { invoices } from '../shared/mock-data';
+import type { InvoiceSummary, PayCashInput } from '@mediklinik/types';
+import { createInvoiceFromMedicalRecord, invoices, payInvoiceCash } from '../shared/mock-data';
 
 export class InvoicesService {
   list(): InvoiceSummary[] {
@@ -22,5 +22,13 @@ export class InvoicesService {
       snapToken: 'snap_patient_payment_demo',
       orderId: 'klinik-sehat-INV-001',
     };
+  }
+
+  payCash(invoiceId: string, input: PayCashInput): InvoiceSummary {
+    return payInvoiceCash(invoiceId, input);
+  }
+
+  createFromMedicalRecord(medicalRecordId: string): InvoiceSummary {
+    return createInvoiceFromMedicalRecord(medicalRecordId);
   }
 }

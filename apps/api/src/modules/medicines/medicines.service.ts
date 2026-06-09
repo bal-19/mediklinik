@@ -1,5 +1,5 @@
-import type { LowStockAlert, MedicineSummary, StockMutationSummary } from '@mediklinik/types';
-import { getLowStockAlerts, medicines, stockMutations } from '../shared/mock-data';
+import type { LowStockAlert, MedicineSummary, StockInInput, StockMutationSummary } from '@mediklinik/types';
+import { getLowStockAlerts, medicines, stockInMedicine, stockMutations } from '../shared/mock-data';
 
 export class MedicinesService {
   list(): MedicineSummary[] {
@@ -12,5 +12,9 @@ export class MedicinesService {
 
   getMutations(): StockMutationSummary[] {
     return stockMutations;
+  }
+
+  stockIn(medicineId: string, input: StockInInput) {
+    return stockInMedicine(medicineId, input);
   }
 }

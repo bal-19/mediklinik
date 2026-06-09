@@ -6,7 +6,7 @@ describe('DashboardService', () => {
     const service = new DashboardService();
     const result = service.getSummary();
 
-    expect(result.todayQueueNumber).toBe('A-023');
+    expect(result.todayQueueNumber.startsWith('A-')).toBe(true);
     expect(result.lowStockAlerts.length).toBeGreaterThan(0);
     expect(result.subscription.status).toBe('TRIAL');
   });

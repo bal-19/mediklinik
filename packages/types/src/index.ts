@@ -183,3 +183,20 @@ export interface DashboardSummary {
   lowStockAlerts: LowStockAlert[];
   subscription: SubscriptionSummary;
 }
+
+export interface CreateQueueInput {
+  patientId: string;
+}
+
+export interface UpdateQueueStatusInput {
+  status: QueueStatus;
+}
+
+export interface StockInInput {
+  quantity: number;
+  notes: string;
+}
+
+export interface PayCashInput {
+  amountPaid: number;
+}
