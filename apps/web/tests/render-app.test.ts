@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { renderApp } from '../src/render-app';
+import { renderApp } from '../src/app-shell';
 
 describe('renderApp', () => {
   test('renders pricing section on landing page', () => {
@@ -23,6 +23,6 @@ describe('renderApp', () => {
   test('renders clinic midtrans settings page', () => {
     const markup = renderApp('/app/settings/midtrans');
     expect(markup.includes('Setup credential pembayaran pasien')).toBe(true);
-    expect(markup.includes('isMidtransConfigured')).toBe(true);
+    expect(markup.includes('Endpoint backend hanya mengembalikan flag konfigurasi')).toBe(true);
   });
 });
