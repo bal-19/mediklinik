@@ -19,10 +19,10 @@ export interface DashboardRepositoryContract {
 }
 
 export interface QueuesRepositoryContract {
-  listToday(): QueueItemSummary[];
-  create(input: CreateQueueInput): QueueItemSummary;
-  callNext(): QueueItemSummary;
-  updateStatus(queueId: string, input: UpdateQueueStatusInput): QueueItemSummary;
+  listToday(): Promise<QueueItemSummary[]>;
+  create(input: CreateQueueInput): Promise<QueueItemSummary>;
+  callNext(): Promise<QueueItemSummary>;
+  updateStatus(queueId: string, input: UpdateQueueStatusInput): Promise<QueueItemSummary>;
 }
 
 export interface MedicalRecordsRepositoryContract {

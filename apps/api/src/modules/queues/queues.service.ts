@@ -4,19 +4,19 @@ import { getQueuesRepository } from '../repositories';
 export class QueuesService {
   private readonly queuesRepository = getQueuesRepository();
 
-  getToday(): QueueItemSummary[] {
+  async getToday(): Promise<QueueItemSummary[]> {
     return this.queuesRepository.listToday();
   }
 
-  register(input: CreateQueueInput): QueueItemSummary {
+  async register(input: CreateQueueInput): Promise<QueueItemSummary> {
     return this.queuesRepository.create(input);
   }
 
-  callNext(): QueueItemSummary {
+  async callNext(): Promise<QueueItemSummary> {
     return this.queuesRepository.callNext();
   }
 
-  updateStatus(queueId: string, input: UpdateQueueStatusInput): QueueItemSummary {
+  async updateStatus(queueId: string, input: UpdateQueueStatusInput): Promise<QueueItemSummary> {
     return this.queuesRepository.updateStatus(queueId, input);
   }
 }

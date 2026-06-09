@@ -3,11 +3,11 @@ import type { QueuesRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
 export class QueuesRepository implements QueuesRepositoryContract {
-  listToday(): QueueItemSummary[] {
+  async listToday(): Promise<QueueItemSummary[]> {
     return inMemoryDb.getState().queues;
   }
 
-  create(input: CreateQueueInput): QueueItemSummary {
+  async create(input: CreateQueueInput): Promise<QueueItemSummary> {
     const state = inMemoryDb.getState();
     const highestQueueNumber = state.queues.reduce((highest, item) => {
       const number = Number(item.queueNumber.split('-')[1] ?? '0');
@@ -30,7 +30,7 @@ export class QueuesRepository implements QueuesRepositoryContract {
     return queue;
   }
 
-  callNext(): QueueItemSummary {
+  async callNext(): Promise<QueueItemSummary> {
     const state = inMemoryDb.getState();
     const currentInProgress = state.queues.find((item) => item.status === 'IN_PROGRESS');
     if (currentInProgress) {
@@ -48,7 +48,7 @@ export class QueuesRepository implements QueuesRepositoryContract {
     return waitingQueue;
   }
 
-  updateStatus(queueId: string, input: UpdateQueueStatusInput): QueueItemSummary {
+  async updateStatus(queueId: string, input: UpdateQueueStatusInput): Promise<QueueItemSummary> {
     const queue = inMemoryDb.getState().queues.find((item) => item.id === queueId);
     if (!queue) {
       throw new Error('Antrian tidak ditemukan.');

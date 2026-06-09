@@ -31,4 +31,6 @@
   memakai repository in-memory, cocok untuk development cepat dan test.
 - `REPOSITORY_PROVIDER=supabase`
   menyiapkan jalur repository Supabase.
+- `DEFAULT_CLINIC_ID`
+  dipakai sementara oleh repository Supabase untuk scope data tenant pada domain `queues`.
 - Jika provider diset ke `supabase` tetapi `SUPABASE_URL` atau `SUPABASE_SERVICE_ROLE_KEY` belum diisi, sistem akan fallback ke `memory` agar boot lokal tetap aman.

@@ -5,9 +5,9 @@ import { setupInMemoryTest } from '../src/modules/shared/test-utils';
 setupInMemoryTest();
 
 describe('QueuesService', () => {
-  test('register creates a new waiting queue number', () => {
+  test('register creates a new waiting queue number', async () => {
     const service = new QueuesService();
-    const result = service.register({ patientId: 'patient_99' });
+    const result = await service.register({ patientId: 'patient_99' });
 
     expect(result.patientId).toBe('patient_99');
     expect(result.queueNumber.startsWith('A-')).toBe(true);

@@ -6,12 +6,12 @@ import { QueuesService } from './queues.service';
 const queuesService = new QueuesService();
 
 export function registerQueueRoutes(router: ApiRouter) {
-  router.get('/queues/today', () => ok(queuesService.getToday()), {
+  router.get('/queues/today', async () => ok(await queuesService.getToday()), {
     summary: 'List today queues',
     tags: ['Queues'],
     auth: 'bearer',
   });
-  router.post('/queues/register', ({ body }) => ok(queuesService.register(parseRegisterQueueBody(body)), 'Nomor antrian berhasil dibuat'), {
+  router.post('/queues/register', async ({ body }) => ok(await queuesService.register(parseRegisterQueueBody(body)), 'Nomor antrian berhasil dibuat'), {
     summary: 'Register queue from app',
     tags: ['Queues'],
     auth: 'bearer',
@@ -30,12 +30,12 @@ export function registerQueueRoutes(router: ApiRouter) {
       },
     },
   });
-  router.patch('/queues/:id/call', () => ok(queuesService.callNext(), 'Nomor antrian berikutnya dipanggil'), {
+  router.patch('/queues/:id/call', async () => ok(await queuesService.callNext(), 'Nomor antrian berikutnya dipanggil'), {
     summary: 'Call next queue',
     tags: ['Queues'],
     auth: 'bearer',
   });
-  router.patch('/queues/:id/status', ({ params, body }) => ok(queuesService.updateStatus(requireParam(params.id, 'id'), parseQueueStatusBody(body)), 'Status antrian diperbarui'), {
+  router.patch('/queues/:id/status', async ({ params, body }) => ok(await queuesService.updateStatus(requireParam(params.id, 'id'), parseQueueStatusBody(body)), 'Status antrian diperbarui'), {
     summary: 'Update queue status',
     tags: ['Queues'],
     auth: 'bearer',
