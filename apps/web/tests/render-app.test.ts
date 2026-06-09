@@ -19,4 +19,10 @@ describe('renderApp', () => {
     expect(markup.includes('Masa langganan Anda telah berakhir')).toBe(true);
     expect(markup.includes('Buka Halaman Billing')).toBe(true);
   });
+
+  test('renders clinic midtrans settings page', () => {
+    const markup = renderApp('/app/settings/midtrans');
+    expect(markup.includes('Setup credential pembayaran pasien')).toBe(true);
+    expect(markup.includes('isMidtransConfigured')).toBe(true);
+  });
 });

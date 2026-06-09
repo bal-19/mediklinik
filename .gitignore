@@ -1,15 +1,54 @@
-node_modules
-.DS_Store
-dist
-coverage
-.turbo
-.idea
-.vscode
+# Dependencies
+node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+
+# Build output
+dist/
+apps/*/dist/
+packages/*/dist/
+coverage/
+apps/*/coverage/
+packages/*/coverage/
+.turbo/
+.cache/
+
+# Environment files
 .env
-.env.local
-.env.*.local
-bun.lock
-apps/*/dist
-apps/*/coverage
-packages/*/dist
+.env.*
+!.env.example
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+packages/*/.env
+packages/*/.env.*
+
+# Logs and runtime files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.seed
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Bun and TypeScript cache
+*.tsbuildinfo
+
+# Deployment and local platform folders
+.vercel/
+.railway/
+
+# Supabase local state
+supabase/.temp/
+supabase/.branches/
+
+# Generated public assets
 public/sw.js

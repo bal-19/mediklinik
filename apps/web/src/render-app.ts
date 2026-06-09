@@ -368,6 +368,33 @@ function renderDashboardContent(pathname: string) {
   }
 
   if (pathname.startsWith('/app/billing')) {
+    if (pathname.startsWith('/app/billing/checkout')) {
+      return `
+        <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <article class="rounded-3xl border border-slate-200 bg-white p-6">
+            <div class="text-sm text-slate-500">Checkout Subscription</div>
+            <h2 class="mt-3 text-3xl font-bold">Paket Clinic</h2>
+            <p class="mt-4 text-sm leading-7 text-slate-600">Flow ini akan memakai Platform Midtrans milik MediKlinik, bukan credential Midtrans klinik pasien.</p>
+            <div class="mt-6 grid gap-4">
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <div class="text-sm text-slate-500">Harga bulanan</div>
+                <div class="mt-2 text-2xl font-bold">Rp 299.000</div>
+              </div>
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <div class="text-sm text-slate-500">Order ID</div>
+                <div class="mt-2 font-mono text-lg font-bold">klinik-sehat-SUB-2026-06</div>
+              </div>
+            </div>
+            <a class="mt-6 inline-flex rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-white" href="/app/billing">Kembali ke Billing</a>
+          </article>
+          <article class="rounded-3xl border border-sky-200 bg-sky-50 p-6">
+            <div class="text-sm font-semibold text-sky-700">Hasil Backend</div>
+            <p class="mt-4 text-sm leading-7 text-slate-700">Endpoint foundation POST /subscriptions/checkout sudah menyiapkan snapToken, orderId, dan redirectUrl untuk dihubungkan ke Midtrans Snap pada fase integrasi nyata.</p>
+          </article>
+        </section>
+      `;
+    }
+
     return `
       <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <article class="rounded-3xl border border-amber-200 bg-amber-50 p-6">
@@ -401,6 +428,31 @@ function renderDashboardContent(pathname: string) {
             </article>`,
           )
           .join('')}
+      </section>
+    `;
+  }
+
+  if (pathname.startsWith('/app/settings/midtrans')) {
+    return `
+      <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <article class="rounded-3xl border border-slate-200 bg-white p-6">
+          <div class="text-sm text-slate-500">Integrasi Midtrans Klinik</div>
+          <h2 class="mt-3 text-3xl font-bold">Setup credential pembayaran pasien</h2>
+          <p class="mt-4 text-sm leading-7 text-slate-600">Credential ini dipakai hanya untuk pembayaran invoice pasien di klinik Anda. Backend akan menyimpannya dalam bentuk terenkripsi dan frontend hanya menerima status setup.</p>
+          <div class="mt-6 grid gap-4">
+            <div class="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-500">Merchant ID</div>
+            <div class="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-500">Client Key</div>
+            <div class="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-500">Server Key</div>
+          </div>
+          <div class="mt-6 flex gap-4">
+            <a class="rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-white" href="/app/billing">Simpan Setup</a>
+            <a class="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700" href="/app/dashboard">Kembali</a>
+          </div>
+        </article>
+        <article class="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+          <div class="text-sm font-semibold text-amber-700">Aturan Keamanan</div>
+          <p class="mt-4 text-sm leading-7 text-slate-700">Server key Midtrans klinik tidak boleh pernah dikirim balik ke browser. Endpoint PUT /clinics/me/midtrans hanya mengembalikan flag isMidtransConfigured setelah proses simpan berhasil.</p>
+        </article>
       </section>
     `;
   }
@@ -458,6 +510,7 @@ function getPageTitle(pathname: string) {
   if (pathname.startsWith('/app/patients')) return 'Pasien & Rekam Medis';
   if (pathname.startsWith('/app/medicines')) return 'Stok Obat';
   if (pathname.startsWith('/app/invoices')) return 'Invoice';
+  if (pathname.startsWith('/app/settings/midtrans')) return 'Setup Midtrans Klinik';
   if (pathname.startsWith('/app/billing')) return 'Billing';
   return 'Dashboard';
 }
@@ -467,6 +520,7 @@ function getPageDescription(pathname: string) {
   if (pathname.startsWith('/app/patients')) return 'Lihat ringkasan pasien dan catatan klinis terbaru.';
   if (pathname.startsWith('/app/medicines')) return 'Kelola stok, threshold minimum, dan persiapan restock.';
   if (pathname.startsWith('/app/invoices')) return 'Pantau status invoice dan pembayaran pasien.';
+  if (pathname.startsWith('/app/settings/midtrans')) return 'Simpan credential Midtrans per-klinik dengan alur yang aman.';
   if (pathname.startsWith('/app/billing')) return 'Kelola status langganan, perpanjangan, dan setup Midtrans klinik.';
   return 'Ringkasan operasional harian klinik.';
 }
