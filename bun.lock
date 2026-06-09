@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "mediklinik",
+      "dependencies": {
+        "web-push": "^3.6.7",
+      },
     },
     "apps/api": {
       "name": "@mediklinik/api",

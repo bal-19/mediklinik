@@ -16,5 +16,8 @@
     "dev:web": "bun run --filter '@mediklinik/web' dev",
     "typecheck:api": "bun run --filter '@mediklinik/api' typecheck",
     "typecheck:web": "bun run --filter '@mediklinik/web' typecheck"
+  },
+  "dependencies": {
+    "web-push": "^3.6.7"
   }
 }
