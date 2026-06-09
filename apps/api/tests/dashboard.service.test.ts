@@ -5,9 +5,9 @@ import { setupInMemoryTest } from '../src/modules/shared/test-utils';
 setupInMemoryTest();
 
 describe('DashboardService', () => {
-  test('returns summary with low stock alerts and subscription data', () => {
+  test('returns summary with low stock alerts and subscription data', async () => {
     const service = new DashboardService();
-    const result = service.getSummary();
+    const result = await service.getSummary();
 
     expect(result.todayQueueNumber.startsWith('A-')).toBe(true);
     expect(result.lowStockAlerts.length).toBeGreaterThan(0);

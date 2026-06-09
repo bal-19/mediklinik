@@ -3,11 +3,11 @@ import type { MedicinesRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
 export class MedicinesRepository implements MedicinesRepositoryContract {
-  list(): MedicineSummary[] {
+  async list(): Promise<MedicineSummary[]> {
     return inMemoryDb.getState().medicines;
   }
 
-  listLowStock(): LowStockAlert[] {
+  async listLowStock(): Promise<LowStockAlert[]> {
     return inMemoryDb
       .getState()
       .medicines.filter((medicine) => medicine.stockQuantity <= medicine.minStockAlert)
@@ -19,11 +19,11 @@ export class MedicinesRepository implements MedicinesRepositoryContract {
       }));
   }
 
-  listMutations(): StockMutationSummary[] {
+  async listMutations(): Promise<StockMutationSummary[]> {
     return inMemoryDb.getState().stockMutations;
   }
 
-  stockIn(medicineId: string, input: StockInInput) {
+  async stockIn(medicineId: string, input: StockInInput): Promise<{ medicine: MedicineSummary; mutation: StockMutationSummary }> {
     const state = inMemoryDb.getState();
     const medicine = state.medicines.find((item) => item.id === medicineId);
     if (!medicine) {

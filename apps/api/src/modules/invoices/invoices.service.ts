@@ -4,12 +4,12 @@ import { getInvoicesRepository } from '../repositories';
 export class InvoicesService {
   private readonly invoicesRepository = getInvoicesRepository();
 
-  list(): InvoiceSummary[] {
+  async list(): Promise<InvoiceSummary[]> {
     return this.invoicesRepository.list();
   }
 
-  getById(): InvoiceSummary {
-    return this.invoicesRepository.findById('inv_1');
+  async getById(invoiceId = 'inv_1'): Promise<InvoiceSummary> {
+    return this.invoicesRepository.findById(invoiceId);
   }
 
   payOnline() {
@@ -20,11 +20,11 @@ export class InvoicesService {
     };
   }
 
-  payCash(invoiceId: string, input: PayCashInput): InvoiceSummary {
+  async payCash(invoiceId: string, input: PayCashInput): Promise<InvoiceSummary> {
     return this.invoicesRepository.payCash(invoiceId, input);
   }
 
-  createFromMedicalRecord(medicalRecordId: string): InvoiceSummary {
+  async createFromMedicalRecord(medicalRecordId: string): Promise<InvoiceSummary> {
     return this.invoicesRepository.createFromMedicalRecord(medicalRecordId);
   }
 }

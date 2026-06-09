@@ -3,11 +3,11 @@ import type { MedicalRecordsRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
 export class MedicalRecordsRepository implements MedicalRecordsRepositoryContract {
-  listByPatient(): MedicalRecordSummary[] {
+  async listByPatient(): Promise<MedicalRecordSummary[]> {
     return inMemoryDb.getState().medicalRecords;
   }
 
-  findById(recordId: string): MedicalRecordSummary {
+  async findById(recordId: string): Promise<MedicalRecordSummary> {
     const record = inMemoryDb.getState().medicalRecords.find((item) => item.id === recordId);
     if (!record) {
       throw new Error('Rekam medis tidak ditemukan.');

@@ -15,7 +15,7 @@ export class DashboardRepository implements DashboardRepositoryContract {
       }));
   }
 
-  getSummary(): DashboardSummary {
+  async getSummary(): Promise<DashboardSummary> {
     const state = inMemoryDb.getState();
     const currentQueue = [...state.queues]
       .sort((left, right) => left.queueNumber.localeCompare(right.queueNumber))

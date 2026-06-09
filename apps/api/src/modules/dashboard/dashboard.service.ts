@@ -4,7 +4,7 @@ import { getDashboardRepository } from '../repositories';
 export class DashboardService {
   private readonly dashboardRepository = getDashboardRepository();
 
-  getSummary(): DashboardSummary {
+  async getSummary(): Promise<DashboardSummary> {
     return this.dashboardRepository.getSummary();
   }
 }

@@ -6,11 +6,11 @@ import { MedicalRecordsRepository } from './medical-records.repository';
 export class InvoicesRepository implements InvoicesRepositoryContract {
   private readonly medicalRecordsRepository = new MedicalRecordsRepository();
 
-  list(): InvoiceSummary[] {
+  async list(): Promise<InvoiceSummary[]> {
     return inMemoryDb.getState().invoices;
   }
 
-  findById(invoiceId: string): InvoiceSummary {
+  async findById(invoiceId: string): Promise<InvoiceSummary> {
     const invoice = inMemoryDb.getState().invoices.find((item) => item.id === invoiceId);
     if (!invoice) {
       throw new Error('Invoice tidak ditemukan.');
@@ -19,17 +19,17 @@ export class InvoicesRepository implements InvoicesRepositoryContract {
     return invoice;
   }
 
-  payCash(invoiceId: string, input: PayCashInput): InvoiceSummary {
-    const invoice = this.findById(invoiceId);
+  async payCash(invoiceId: string, input: PayCashInput): Promise<InvoiceSummary> {
+    const invoice = await this.findById(invoiceId);
     invoice.status = input.amountPaid >= invoice.totalAmount ? 'PAID' : 'PARTIAL';
     invoice.paymentMethod = 'CASH';
     invoice.paidAt = new Date().toISOString();
     return invoice;
   }
 
-  createFromMedicalRecord(medicalRecordId: string): InvoiceSummary {
+  async createFromMedicalRecord(medicalRecordId: string): Promise<InvoiceSummary> {
     const state = inMemoryDb.getState();
-    const record = this.medicalRecordsRepository.findById(medicalRecordId);
+    const record = await this.medicalRecordsRepository.findById(medicalRecordId);
 
     const stamp = Date.now();
     const items: InvoiceItemSummary[] = [

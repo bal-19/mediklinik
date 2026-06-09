@@ -4,11 +4,11 @@ import { getMedicalRecordsRepository } from '../repositories';
 export class MedicalRecordsService {
   private readonly medicalRecordsRepository = getMedicalRecordsRepository();
 
-  getByPatient(): MedicalRecordSummary[] {
+  async getByPatient(): Promise<MedicalRecordSummary[]> {
     return this.medicalRecordsRepository.listByPatient();
   }
 
-  getById(): MedicalRecordSummary {
-    return this.medicalRecordsRepository.findById('mr_1');
+  async getById(recordId = 'mr_1'): Promise<MedicalRecordSummary> {
+    return this.medicalRecordsRepository.findById(recordId);
   }
 }

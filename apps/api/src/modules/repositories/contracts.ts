@@ -15,7 +15,7 @@ import type {
 } from '@mediklinik/types';
 
 export interface DashboardRepositoryContract {
-  getSummary(): DashboardSummary;
+  getSummary(): Promise<DashboardSummary>;
 }
 
 export interface QueuesRepositoryContract {
@@ -26,28 +26,28 @@ export interface QueuesRepositoryContract {
 }
 
 export interface MedicalRecordsRepositoryContract {
-  listByPatient(): MedicalRecordSummary[];
-  findById(recordId: string): MedicalRecordSummary;
+  listByPatient(): Promise<MedicalRecordSummary[]>;
+  findById(recordId: string): Promise<MedicalRecordSummary>;
 }
 
 export interface MedicinesRepositoryContract {
-  list(): MedicineSummary[];
-  listLowStock(): LowStockAlert[];
-  listMutations(): StockMutationSummary[];
-  stockIn(medicineId: string, input: StockInInput): {
+  list(): Promise<MedicineSummary[]>;
+  listLowStock(): Promise<LowStockAlert[]>;
+  listMutations(): Promise<StockMutationSummary[]>;
+  stockIn(medicineId: string, input: StockInInput): Promise<{
     medicine: MedicineSummary;
     mutation: StockMutationSummary;
-  };
+  }>;
 }
 
 export interface InvoicesRepositoryContract {
-  list(): InvoiceSummary[];
-  findById(invoiceId: string): InvoiceSummary;
-  payCash(invoiceId: string, input: PayCashInput): InvoiceSummary;
-  createFromMedicalRecord(medicalRecordId: string): InvoiceSummary;
+  list(): Promise<InvoiceSummary[]>;
+  findById(invoiceId: string): Promise<InvoiceSummary>;
+  payCash(invoiceId: string, input: PayCashInput): Promise<InvoiceSummary>;
+  createFromMedicalRecord(medicalRecordId: string): Promise<InvoiceSummary>;
 }
 
 export interface ReportsRepositoryContract {
-  getVisits(): VisitReportPoint[];
-  getRevenue(): RevenueReportPoint[];
+  getVisits(): Promise<VisitReportPoint[]>;
+  getRevenue(): Promise<RevenueReportPoint[]>;
 }

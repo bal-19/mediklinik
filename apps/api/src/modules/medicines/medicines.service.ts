@@ -4,19 +4,19 @@ import { getMedicinesRepository } from '../repositories';
 export class MedicinesService {
   private readonly medicinesRepository = getMedicinesRepository();
 
-  list(): MedicineSummary[] {
+  async list(): Promise<MedicineSummary[]> {
     return this.medicinesRepository.list();
   }
 
-  getLowStock(): LowStockAlert[] {
+  async getLowStock(): Promise<LowStockAlert[]> {
     return this.medicinesRepository.listLowStock();
   }
 
-  getMutations(): StockMutationSummary[] {
+  async getMutations(): Promise<StockMutationSummary[]> {
     return this.medicinesRepository.listMutations();
   }
 
-  stockIn(medicineId: string, input: StockInInput) {
+  async stockIn(medicineId: string, input: StockInInput): Promise<{ medicine: MedicineSummary; mutation: StockMutationSummary }> {
     return this.medicinesRepository.stockIn(medicineId, input);
   }
 }

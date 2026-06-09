@@ -4,11 +4,11 @@ import { getReportsRepository } from '../repositories';
 export class ReportsService {
   private readonly reportsRepository = getReportsRepository();
 
-  getVisits(): VisitReportPoint[] {
+  async getVisits(): Promise<VisitReportPoint[]> {
     return this.reportsRepository.getVisits();
   }
 
-  getRevenue(): RevenueReportPoint[] {
+  async getRevenue(): Promise<RevenueReportPoint[]> {
     return this.reportsRepository.getRevenue();
   }
 }

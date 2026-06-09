@@ -6,17 +6,17 @@ import { InvoicesService } from './invoices.service';
 const invoicesService = new InvoicesService();
 
 export function registerInvoiceRoutes(router: ApiRouter) {
-  router.get('/invoices', () => ok(invoicesService.list()), {
+  router.get('/invoices', async () => ok(await invoicesService.list()), {
     summary: 'List invoices',
     tags: ['Invoices'],
     auth: 'bearer',
   });
-  router.get('/invoices/:id', () => ok(invoicesService.getById()), {
+  router.get('/invoices/:id', async ({ params }) => ok(await invoicesService.getById(params.id ?? 'inv_1')), {
     summary: 'Get invoice detail',
     tags: ['Invoices'],
     auth: 'bearer',
   });
-  router.post('/invoices', ({ body }) => ok(invoicesService.createFromMedicalRecord(parseCreateInvoiceBody(body).medicalRecordId), 'Invoice berhasil dibuat'), {
+  router.post('/invoices', async ({ body }) => ok(await invoicesService.createFromMedicalRecord(parseCreateInvoiceBody(body).medicalRecordId), 'Invoice berhasil dibuat'), {
     summary: 'Create invoice from medical record',
     tags: ['Invoices'],
     auth: 'bearer',
@@ -35,7 +35,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
       },
     },
   });
-  router.post('/invoices/:id/pay-cash', ({ params, body }) => ok(invoicesService.payCash(requireParam(params.id, 'id'), parsePayCashBody(body)), 'Pembayaran tunai berhasil dicatat'), {
+  router.post('/invoices/:id/pay-cash', async ({ params, body }) => ok(await invoicesService.payCash(requireParam(params.id, 'id'), parsePayCashBody(body)), 'Pembayaran tunai berhasil dicatat'), {
     summary: 'Pay invoice by cash',
     tags: ['Invoices'],
     auth: 'bearer',

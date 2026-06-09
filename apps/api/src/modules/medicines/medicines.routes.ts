@@ -6,22 +6,22 @@ import { MedicinesService } from './medicines.service';
 const medicinesService = new MedicinesService();
 
 export function registerMedicineRoutes(router: ApiRouter) {
-  router.get('/medicines', () => ok(medicinesService.list()), {
+  router.get('/medicines', async () => ok(await medicinesService.list()), {
     summary: 'List medicines',
     tags: ['Medicines'],
     auth: 'bearer',
   });
-  router.get('/medicines/low-stock', () => ok(medicinesService.getLowStock()), {
+  router.get('/medicines/low-stock', async () => ok(await medicinesService.getLowStock()), {
     summary: 'List low stock alerts',
     tags: ['Medicines'],
     auth: 'bearer',
   });
-  router.get('/medicines/:id/mutations', () => ok(medicinesService.getMutations()), {
+  router.get('/medicines/:id/mutations', async () => ok(await medicinesService.getMutations()), {
     summary: 'List stock mutations for medicine',
     tags: ['Medicines'],
     auth: 'bearer',
   });
-  router.post('/medicines/:id/stock-in', ({ params, body }) => ok(medicinesService.stockIn(requireParam(params.id, 'id'), parseStockInBody(body)), 'Stok obat berhasil ditambahkan'), {
+  router.post('/medicines/:id/stock-in', async ({ params, body }) => ok(await medicinesService.stockIn(requireParam(params.id, 'id'), parseStockInBody(body)), 'Stok obat berhasil ditambahkan'), {
     summary: 'Add medicine stock',
     tags: ['Medicines'],
     auth: 'bearer',

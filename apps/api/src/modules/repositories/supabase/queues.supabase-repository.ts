@@ -1,6 +1,7 @@
 import type { CreateQueueInput, QueueItemSummary, UpdateQueueStatusInput } from '@mediklinik/types';
 import type { QueuesRepositoryContract } from '../contracts';
 import { getSupabaseAdminClient } from '../../shared/supabase-client';
+import { getTodayDate, requireClinicId } from './utils';
 
 interface QueueRow {
   id: string;
@@ -146,19 +147,6 @@ export class SupabaseQueuesRepository implements QueuesRepositoryContract {
 
     return mapQueueRow(data);
   }
-}
-
-function requireClinicId() {
-  const clinicId = process.env.DEFAULT_CLINIC_ID;
-  if (!clinicId) {
-    throw new Error('DEFAULT_CLINIC_ID wajib diisi untuk repository Supabase pada domain queues.');
-  }
-
-  return clinicId;
-}
-
-function getTodayDate() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function mapQueueRow(row: QueueRow): QueueItemSummary {
