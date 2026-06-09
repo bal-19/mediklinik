@@ -1,8 +1,8 @@
 import type { CreateQueueInput, QueueItemSummary, UpdateQueueStatusInput } from '@mediklinik/types';
-import { QueuesRepository } from '../repositories/queues.repository';
+import { getQueuesRepository } from '../repositories';
 
 export class QueuesService {
-  private readonly queuesRepository = new QueuesRepository();
+  private readonly queuesRepository = getQueuesRepository();
 
   getToday(): QueueItemSummary[] {
     return this.queuesRepository.listToday();

@@ -1,7 +1,8 @@
 import type { DashboardSummary, LowStockAlert } from '@mediklinik/types';
+import type { DashboardRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
-export class DashboardRepository {
+export class DashboardRepository implements DashboardRepositoryContract {
   getLowStockAlerts(): LowStockAlert[] {
     return inMemoryDb
       .getState()

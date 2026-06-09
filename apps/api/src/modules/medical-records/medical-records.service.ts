@@ -1,8 +1,8 @@
 import type { MedicalRecordSummary } from '@mediklinik/types';
-import { MedicalRecordsRepository } from '../repositories/medical-records.repository';
+import { getMedicalRecordsRepository } from '../repositories';
 
 export class MedicalRecordsService {
-  private readonly medicalRecordsRepository = new MedicalRecordsRepository();
+  private readonly medicalRecordsRepository = getMedicalRecordsRepository();
 
   getByPatient(): MedicalRecordSummary[] {
     return this.medicalRecordsRepository.listByPatient();

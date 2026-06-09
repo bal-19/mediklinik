@@ -1,8 +1,9 @@
 import type { InvoiceItemSummary, InvoiceSummary, PayCashInput } from '@mediklinik/types';
+import type { InvoicesRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 import { MedicalRecordsRepository } from './medical-records.repository';
 
-export class InvoicesRepository {
+export class InvoicesRepository implements InvoicesRepositoryContract {
   private readonly medicalRecordsRepository = new MedicalRecordsRepository();
 
   list(): InvoiceSummary[] {

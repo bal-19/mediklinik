@@ -1,8 +1,8 @@
 import type { RevenueReportPoint, VisitReportPoint } from '@mediklinik/types';
-import { ReportsRepository } from '../repositories/reports.repository';
+import { getReportsRepository } from '../repositories';
 
 export class ReportsService {
-  private readonly reportsRepository = new ReportsRepository();
+  private readonly reportsRepository = getReportsRepository();
 
   getVisits(): VisitReportPoint[] {
     return this.reportsRepository.getVisits();

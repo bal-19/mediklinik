@@ -1,7 +1,8 @@
 import type { MedicalRecordSummary } from '@mediklinik/types';
+import type { MedicalRecordsRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
-export class MedicalRecordsRepository {
+export class MedicalRecordsRepository implements MedicalRecordsRepositoryContract {
   listByPatient(): MedicalRecordSummary[] {
     return inMemoryDb.getState().medicalRecords;
   }

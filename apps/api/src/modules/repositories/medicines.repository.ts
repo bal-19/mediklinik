@@ -1,7 +1,8 @@
 import type { LowStockAlert, MedicineSummary, StockInInput, StockMutationSummary } from '@mediklinik/types';
+import type { MedicinesRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
-export class MedicinesRepository {
+export class MedicinesRepository implements MedicinesRepositoryContract {
   list(): MedicineSummary[] {
     return inMemoryDb.getState().medicines;
   }

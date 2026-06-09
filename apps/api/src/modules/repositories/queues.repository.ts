@@ -1,7 +1,8 @@
 import type { CreateQueueInput, QueueItemSummary, UpdateQueueStatusInput } from '@mediklinik/types';
+import type { QueuesRepositoryContract } from './contracts';
 import { inMemoryDb } from '../shared/in-memory-db';
 
-export class QueuesRepository {
+export class QueuesRepository implements QueuesRepositoryContract {
   listToday(): QueueItemSummary[] {
     return inMemoryDb.getState().queues;
   }

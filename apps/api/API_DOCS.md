@@ -25,3 +25,10 @@
 - Flow subscription MediKlinik memakai Midtrans platform.
 - Flow pembayaran pasien memakai credential Midtrans milik klinik aktif.
 - Credential sensitif tidak dikirim ke frontend.
+
+## Repository provider
+- `REPOSITORY_PROVIDER=memory`
+  memakai repository in-memory, cocok untuk development cepat dan test.
+- `REPOSITORY_PROVIDER=supabase`
+  menyiapkan jalur repository Supabase.
+- Jika provider diset ke `supabase` tetapi `SUPABASE_URL` atau `SUPABASE_SERVICE_ROLE_KEY` belum diisi, sistem akan fallback ke `memory` agar boot lokal tetap aman.

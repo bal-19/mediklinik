@@ -1,8 +1,8 @@
 import type { InvoiceSummary, PayCashInput } from '@mediklinik/types';
-import { InvoicesRepository } from '../repositories/invoices.repository';
+import { getInvoicesRepository } from '../repositories';
 
 export class InvoicesService {
-  private readonly invoicesRepository = new InvoicesRepository();
+  private readonly invoicesRepository = getInvoicesRepository();
 
   list(): InvoiceSummary[] {
     return this.invoicesRepository.list();

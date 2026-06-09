@@ -1,8 +1,8 @@
 import type { LowStockAlert, MedicineSummary, StockInInput, StockMutationSummary } from '@mediklinik/types';
-import { MedicinesRepository } from '../repositories/medicines.repository';
+import { getMedicinesRepository } from '../repositories';
 
 export class MedicinesService {
-  private readonly medicinesRepository = new MedicinesRepository();
+  private readonly medicinesRepository = getMedicinesRepository();
 
   list(): MedicineSummary[] {
     return this.medicinesRepository.list();
