@@ -1,8 +1,10 @@
 import type { DashboardSummary } from '@mediklinik/types';
-import { getDashboardSummary } from '../shared/mock-data';
+import { DashboardRepository } from '../repositories/dashboard.repository';
 
 export class DashboardService {
+  private readonly dashboardRepository = new DashboardRepository();
+
   getSummary(): DashboardSummary {
-    return getDashboardSummary();
+    return this.dashboardRepository.getSummary();
   }
 }

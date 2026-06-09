@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { MedicinesService } from '../src/modules/medicines/medicines.service';
+import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+
+setupInMemoryTest();
 
 describe('MedicinesService', () => {
   test('stock in increases medicine stock and records mutation', () => {

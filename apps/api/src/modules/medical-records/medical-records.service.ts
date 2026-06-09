@@ -1,18 +1,14 @@
 import type { MedicalRecordSummary } from '@mediklinik/types';
-import { medicalRecords } from '../shared/mock-data';
+import { MedicalRecordsRepository } from '../repositories/medical-records.repository';
 
 export class MedicalRecordsService {
+  private readonly medicalRecordsRepository = new MedicalRecordsRepository();
+
   getByPatient(): MedicalRecordSummary[] {
-    return medicalRecords;
+    return this.medicalRecordsRepository.listByPatient();
   }
 
   getById(): MedicalRecordSummary {
-    const record = medicalRecords[0];
-
-    if (!record) {
-      throw new Error('Rekam medis tidak ditemukan.');
-    }
-
-    return record;
+    return this.medicalRecordsRepository.findById('mr_1');
   }
 }

@@ -1,19 +1,15 @@
 import type { InvoiceSummary, PayCashInput } from '@mediklinik/types';
-import { createInvoiceFromMedicalRecord, invoices, payInvoiceCash } from '../shared/mock-data';
+import { InvoicesRepository } from '../repositories/invoices.repository';
 
 export class InvoicesService {
+  private readonly invoicesRepository = new InvoicesRepository();
+
   list(): InvoiceSummary[] {
-    return invoices;
+    return this.invoicesRepository.list();
   }
 
   getById(): InvoiceSummary {
-    const invoice = invoices[0];
-
-    if (!invoice) {
-      throw new Error('Invoice tidak ditemukan.');
-    }
-
-    return invoice;
+    return this.invoicesRepository.findById('inv_1');
   }
 
   payOnline() {
@@ -25,10 +21,10 @@ export class InvoicesService {
   }
 
   payCash(invoiceId: string, input: PayCashInput): InvoiceSummary {
-    return payInvoiceCash(invoiceId, input);
+    return this.invoicesRepository.payCash(invoiceId, input);
   }
 
   createFromMedicalRecord(medicalRecordId: string): InvoiceSummary {
-    return createInvoiceFromMedicalRecord(medicalRecordId);
+    return this.invoicesRepository.createFromMedicalRecord(medicalRecordId);
   }
 }

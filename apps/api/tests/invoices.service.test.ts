@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { InvoicesService } from '../src/modules/invoices/invoices.service';
+import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+
+setupInMemoryTest();
 
 describe('InvoicesService', () => {
   test('create invoice from medical record returns unpaid invoice', () => {

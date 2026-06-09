@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { createApp } from '../src/server';
+import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+
+setupInMemoryTest();
 
 describe('Docs routes', () => {
   test('serves openapi json', async () => {

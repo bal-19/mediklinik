@@ -1,12 +1,14 @@
 import type { RevenueReportPoint, VisitReportPoint } from '@mediklinik/types';
-import { revenueReport, visitReport } from '../shared/mock-data';
+import { ReportsRepository } from '../repositories/reports.repository';
 
 export class ReportsService {
+  private readonly reportsRepository = new ReportsRepository();
+
   getVisits(): VisitReportPoint[] {
-    return visitReport;
+    return this.reportsRepository.getVisits();
   }
 
   getRevenue(): RevenueReportPoint[] {
-    return revenueReport;
+    return this.reportsRepository.getRevenue();
   }
 }

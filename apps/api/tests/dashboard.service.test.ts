@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { DashboardService } from '../src/modules/dashboard/dashboard.service';
+import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+
+setupInMemoryTest();
 
 describe('DashboardService', () => {
   test('returns summary with low stock alerts and subscription data', () => {

@@ -1,20 +1,22 @@
 import type { LowStockAlert, MedicineSummary, StockInInput, StockMutationSummary } from '@mediklinik/types';
-import { getLowStockAlerts, medicines, stockInMedicine, stockMutations } from '../shared/mock-data';
+import { MedicinesRepository } from '../repositories/medicines.repository';
 
 export class MedicinesService {
+  private readonly medicinesRepository = new MedicinesRepository();
+
   list(): MedicineSummary[] {
-    return medicines;
+    return this.medicinesRepository.list();
   }
 
   getLowStock(): LowStockAlert[] {
-    return getLowStockAlerts();
+    return this.medicinesRepository.listLowStock();
   }
 
   getMutations(): StockMutationSummary[] {
-    return stockMutations;
+    return this.medicinesRepository.listMutations();
   }
 
   stockIn(medicineId: string, input: StockInInput) {
-    return stockInMedicine(medicineId, input);
+    return this.medicinesRepository.stockIn(medicineId, input);
   }
 }

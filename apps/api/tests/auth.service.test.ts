@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { AuthService } from '../src/modules/auth/auth.service';
+import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+
+setupInMemoryTest();
 
 describe('AuthService', () => {
   test('login returns auth session with tokens', () => {
