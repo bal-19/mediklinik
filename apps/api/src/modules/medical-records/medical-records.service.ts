@@ -1,4 +1,4 @@
-import type { MedicalRecordSummary } from '@mediklinik/types';
+import type { CreateMedicalRecordInput, MedicalRecordSummary, UpdateMedicalRecordInput } from '@mediklinik/types';
 import { getMedicalRecordsRepository } from '../repositories';
 
 export class MedicalRecordsService {
@@ -10,5 +10,13 @@ export class MedicalRecordsService {
 
   async getById(recordId = 'mr_1'): Promise<MedicalRecordSummary> {
     return this.medicalRecordsRepository.findById(recordId);
+  }
+
+  async create(input: CreateMedicalRecordInput) {
+    return this.medicalRecordsRepository.create(input);
+  }
+
+  async update(recordId: string, input: UpdateMedicalRecordInput) {
+    return this.medicalRecordsRepository.update(recordId, input);
   }
 }

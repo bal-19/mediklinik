@@ -2,6 +2,8 @@ import type {
   InvoiceSummary,
   MedicalRecordSummary,
   MedicineSummary,
+  PrescriptionSummary,
+  PushSubscriptionInput,
   QueueItemSummary,
   RevenueReportPoint,
   StockMutationSummary,
@@ -16,6 +18,9 @@ export interface InMemoryState {
   medicines: MedicineSummary[];
   stockMutations: StockMutationSummary[];
   invoices: InvoiceSummary[];
+  prescriptions: PrescriptionSummary[];
+  pushSubscriptions: Array<PushSubscriptionInput & { userId: string; clinicId: string }>;
+  subscriptionPayments: import('@mediklinik/types').SubscriptionPaymentSummary[];
   visitReport: VisitReportPoint[];
   revenueReport: RevenueReportPoint[];
 }
@@ -158,6 +163,9 @@ function createSeedState(): InMemoryState {
         ],
       },
     ],
+    prescriptions: [],
+    pushSubscriptions: [],
+    subscriptionPayments: [],
     visitReport: [
       { month: 'Jan', totalVisits: 122 },
       { month: 'Feb', totalVisits: 134 },

@@ -3,8 +3,13 @@ import type {
   ClinicSummary,
   SubscriptionSummary,
 } from '@mediklinik/types';
+import { canUseSupabaseRepositories, getSupabaseAdminClient } from '../shared/supabase-client';
+import { getAuthContext } from '../shared/request-context';
+import { CredentialEncryptionService } from './credential-encryption.service';
 
 export class ClinicsService {
+  private readonly encryption = new CredentialEncryptionService();
+  private midtransConfigured = false;
   getCurrentClinic(): ClinicSummary {
     return {
       id: 'clinic_demo',
@@ -14,7 +19,7 @@ export class ClinicsService {
       subscriptionStatus: 'TRIAL',
       trialExpiresAt: '2026-06-23T00:00:00.000Z',
       subscriptionExpiresAt: null,
-      isMidtransConfigured: false,
+      isMidtransConfigured: this.midtransConfigured,
     };
   }
 
@@ -47,5 +52,22 @@ export class ClinicsService {
       subscriptionStatus: 'TRIAL',
       isPublicPageVisible: true,
     };
+  }
+
+  async saveMidtransCredentials(input: { serverKey: string; clientKey: string; merchantId?: string }) {
+    if (!input.serverKey || !input.clientKey) throw new Error('Server key dan client key Midtrans wajib diisi.');
+    const encryptedServerKey = this.encryption.encrypt(input.serverKey);
+    const encryptedClientKey = this.encryption.encrypt(input.clientKey);
+    if (canUseSupabaseRepositories()) {
+      const clinicId = getAuthContext()?.clinicId;
+      const { error } = await getSupabaseAdminClient().from('clinics').update({
+        midtrans_server_key_encrypted: encryptedServerKey,
+        midtrans_client_key_encrypted: encryptedClientKey,
+        merchant_id: input.merchantId,
+      }).eq('id', clinicId);
+      if (error) throw new Error(`Gagal menyimpan credential Midtrans: ${error.message}`);
+    }
+    this.midtransConfigured = true;
+    return { isMidtransConfigured: true };
   }
 }

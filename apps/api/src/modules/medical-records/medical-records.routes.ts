@@ -17,4 +17,10 @@ export function registerMedicalRecordRoutes(router: ApiRouter) {
     auth: 'bearer',
     subscriptionRequired: true,
   });
+  router.post('/medical-records', async ({ body }) => ok(await medicalRecordsService.create(body as import('@mediklinik/types').CreateMedicalRecordInput), 'Rekam medis dibuat'), {
+    summary: 'Create medical record', description: 'Membuat rekam medis yang dapat diedit maksimal 24 jam.', tags: ['Medical Records'], auth: 'bearer', subscriptionRequired: true,
+  });
+  router.patch('/medical-records/:id', async ({ params, body }) => ok(await medicalRecordsService.update(params.id!, body as import('@mediklinik/types').UpdateMedicalRecordInput), 'Rekam medis diperbarui'), {
+    summary: 'Update medical record', description: 'Ditolak jika rekam medis telah berumur 24 jam.', tags: ['Medical Records'], auth: 'bearer', subscriptionRequired: true,
+  });
 }

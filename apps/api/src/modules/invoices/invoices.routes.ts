@@ -60,7 +60,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
   });
   router.post(
     '/invoices/:id/pay-online',
-    () => ok(invoicesService.payOnline(), 'Transaksi pembayaran online berhasil dibuat'),
+    async ({ params }) => ok(await invoicesService.payOnline(requireParam(params.id, 'id')), 'Transaksi pembayaran online berhasil dibuat'),
     {
       summary: 'Create online payment transaction',
       description: 'Buat transaksi Midtrans Snap untuk invoice pasien menggunakan credential Midtrans milik klinik aktif.',
@@ -69,6 +69,10 @@ export function registerInvoiceRoutes(router: ApiRouter) {
       subscriptionRequired: true,
     },
   );
+  router.post('/invoices/:id/pdf', async ({ params }) => invoicesService.createPdf(requireParam(params.id, 'id')), {
+    summary: 'Generate invoice PDF', description: 'Menghasilkan dokumen PDF invoice untuk diunduh atau dicetak.', tags: ['Invoices'], auth: 'bearer', subscriptionRequired: true,
+    responses: { '200': { description: 'PDF invoice', content: { 'application/pdf': { schema: { type: 'string', contentEncoding: 'binary' } } } } },
+  });
 }
 
 function parseCreateInvoiceBody(body: unknown) {

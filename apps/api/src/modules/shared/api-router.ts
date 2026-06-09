@@ -52,6 +52,10 @@ export class ApiRouter {
     this.routes.push({ method: 'PATCH', path, handler, meta });
   }
 
+  delete(path: string, handler: Handler, meta?: RouteMeta) {
+    this.routes.push({ method: 'DELETE', path, handler, meta });
+  }
+
   listRoutes() {
     return this.routes;
   }
@@ -77,14 +81,14 @@ export class ApiRouter {
       }
 
       const body = await parseBody(request);
-      const result = await runWithAuthContext(authContext, () =>
-        route.handler({
-          request,
-          params,
-          query: url.searchParams,
-          body,
-        }),
-      );
+      let result: HandlerResult;
+      try {
+        result = await runWithAuthContext(authContext, () =>
+          route.handler({ request, params, query: url.searchParams, body }),
+        );
+      } catch (error) {
+        return Response.json({ success: false, message: error instanceof Error ? error.message : 'Terjadi kesalahan internal.' }, { status: 400 });
+      }
 
       if (result instanceof Response) {
         return result;
@@ -196,7 +200,7 @@ function matchPath(routePath: string, pathname: string) {
 }
 
 async function parseBody(request: Request) {
-  if (request.method === 'GET' || request.method === 'DELETE') {
+  if (request.method === 'GET') {
     return undefined;
   }
 

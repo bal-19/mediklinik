@@ -202,3 +202,82 @@ export interface StockInInput {
 export interface PayCashInput {
   amountPaid: number;
 }
+
+export interface CreateMedicalRecordInput {
+  patientId: string;
+  doctorId: string;
+  queueId?: string;
+  chiefComplaint: string;
+  diagnosis: string;
+  notes?: string;
+}
+
+export type UpdateMedicalRecordInput = Partial<Pick<CreateMedicalRecordInput, 'chiefComplaint' | 'diagnosis' | 'notes'>>;
+
+export interface PrescriptionItemInput {
+  medicineId: string;
+  quantity: number;
+  dosage?: string;
+  instructions?: string;
+}
+
+export interface CreatePrescriptionInput {
+  medicalRecordId: string;
+  notes?: string;
+  items: PrescriptionItemInput[];
+}
+
+export interface PrescriptionSummary {
+  id: string;
+  clinicId: string;
+  medicalRecordId: string;
+  notes: string;
+  items: PrescriptionItemInput[];
+  createdAt: string;
+}
+
+export interface CreateInvoiceInput {
+  medicalRecordId: string;
+}
+
+export interface PayOnlineResponse {
+  invoiceId: string;
+  snapToken: string;
+  orderId: string;
+  redirectUrl?: string;
+}
+
+export interface PushSubscriptionInput {
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+export interface PushPayload {
+  title: string;
+  body: string;
+  url?: string;
+  tag?: string;
+}
+
+export interface QueueRealtimeEvent {
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  queue: QueueItemSummary;
+}
+
+export interface MidtransWebhookPayload {
+  order_id: string;
+  status_code: string;
+  gross_amount: string;
+  transaction_status: string;
+  signature_key: string;
+}
+
+export interface SubscriptionCheckoutInput {
+  clinicId: string;
+  clinicSlug: string;
+  plan: SubscriptionPlan;
+  email: string;
+}

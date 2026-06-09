@@ -1,0 +1,12 @@
+.settings-form {
+  display: grid;
+  gap: 12px;
+  max-width: 620px;
+}
+
+.settings-form input {
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+}

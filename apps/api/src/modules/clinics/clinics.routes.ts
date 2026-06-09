@@ -58,13 +58,7 @@ export function registerClinicRoutes(router: ApiRouter) {
   });
   router.put(
     '/clinics/me/midtrans',
-    () =>
-      ok(
-        {
-          isMidtransConfigured: true,
-        },
-        'Credential Midtrans klinik berhasil disimpan',
-      ),
+    async ({ body }) => ok(await clinicsService.saveMidtransCredentials(body as { serverKey: string; clientKey: string; merchantId?: string }), 'Credential Midtrans klinik berhasil disimpan'),
     {
       summary: 'Update clinic Midtrans credentials',
       description: 'Simpan credential Midtrans klinik secara terenkripsi. Frontend hanya menerima status setup.',

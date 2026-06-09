@@ -12,6 +12,9 @@ apps/*/coverage/
 packages/*/coverage/
 .turbo/
 .cache/
+.vite/
+apps/*/.vite/
+*.local
 
 # Environment files
 .env

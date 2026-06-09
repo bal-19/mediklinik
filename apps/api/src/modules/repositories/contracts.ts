@@ -1,5 +1,6 @@
 import type {
   CreateQueueInput,
+  CreateMedicalRecordInput,
   DashboardSummary,
   InvoiceSummary,
   LowStockAlert,
@@ -11,6 +12,7 @@ import type {
   StockInInput,
   StockMutationSummary,
   UpdateQueueStatusInput,
+  UpdateMedicalRecordInput,
   VisitReportPoint,
 } from '@mediklinik/types';
 
@@ -28,6 +30,8 @@ export interface QueuesRepositoryContract {
 export interface MedicalRecordsRepositoryContract {
   listByPatient(): Promise<MedicalRecordSummary[]>;
   findById(recordId: string): Promise<MedicalRecordSummary>;
+  create(input: CreateMedicalRecordInput): Promise<MedicalRecordSummary>;
+  update(recordId: string, input: UpdateMedicalRecordInput): Promise<MedicalRecordSummary>;
 }
 
 export interface MedicinesRepositoryContract {

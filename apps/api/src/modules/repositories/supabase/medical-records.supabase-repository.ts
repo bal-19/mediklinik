@@ -1,4 +1,4 @@
-import type { MedicalRecordSummary } from '@mediklinik/types';
+import type { CreateMedicalRecordInput, MedicalRecordSummary, UpdateMedicalRecordInput } from '@mediklinik/types';
 import type { MedicalRecordsRepositoryContract } from '../contracts';
 import { getSupabaseAdminClient } from '../../shared/supabase-client';
 import { requireClinicId } from './utils';
@@ -49,6 +49,25 @@ export class SupabaseMedicalRecordsRepository implements MedicalRecordsRepositor
       throw new Error(`Gagal mengambil detail rekam medis: ${error?.message ?? 'data tidak ditemukan.'}`);
     }
 
+    return mapMedicalRecordRow(data);
+  }
+
+  async create(input: CreateMedicalRecordInput): Promise<MedicalRecordSummary> {
+    const { data, error } = await getSupabaseAdminClient().from('medical_records').insert({
+      clinic_id: requireClinicId(), patient_id: input.patientId, doctor_id: input.doctorId, queue_id: input.queueId,
+      chief_complaint: input.chiefComplaint, diagnosis: input.diagnosis, notes: input.notes ?? '',
+    }).select().single();
+    if (error || !data) throw new Error(`Gagal membuat rekam medis: ${error?.message ?? 'data kosong'}`);
+    return mapMedicalRecordRow(data);
+  }
+
+  async update(recordId: string, input: UpdateMedicalRecordInput): Promise<MedicalRecordSummary> {
+    const current = await this.findById(recordId);
+    if (Date.now() - new Date(current.createdAt).getTime() >= 86_400_000 || current.lockedAt) throw new Error('Rekam medis terkunci setelah 24 jam.');
+    const { data, error } = await getSupabaseAdminClient().from('medical_records').update({
+      chief_complaint: input.chiefComplaint, diagnosis: input.diagnosis, notes: input.notes,
+    }).eq('id', recordId).eq('clinic_id', requireClinicId()).select().single();
+    if (error || !data) throw new Error(`Gagal memperbarui rekam medis: ${error?.message ?? 'data kosong'}`);
     return mapMedicalRecordRow(data);
   }
 }
