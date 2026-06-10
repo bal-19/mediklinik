@@ -8,15 +8,7 @@ const clinicsService = new ClinicsService();
 export function registerClinicRoutes(router: ApiRouter) {
   router.post(
     '/clinics/register',
-    () =>
-      ok(
-        {
-          clinicId: 'clinic_new',
-          ownerUserId: 'user_owner',
-          subscriptionStatus: 'TRIAL',
-        },
-        'Registrasi klinik berhasil',
-      ),
+    async ({ body }) => ok(await clinicsService.register(body as { clinicName: string; ownerName: string; email: string; password: string }), 'Registrasi klinik berhasil'),
     {
       summary: 'Register clinic',
       description: 'Registrasi klinik baru dari landing page dan aktifkan trial 14 hari.',
@@ -40,40 +32,32 @@ export function registerClinicRoutes(router: ApiRouter) {
     auth: 'bearer',
   });
 
-  router.get('/clinics/me', () => ok(clinicsService.getCurrentClinic()), {
+  router.get('/clinics/me', async () => ok(await clinicsService.getCurrentClinic()), {
     summary: 'Get active clinic',
     tags: ['Clinics'],
     auth: 'bearer',
     subscriptionRequired: true,
   });
-  router.get('/clinics/me/subscription', () => ok(clinicsService.getSubscription()), {
+  router.get('/clinics/me/subscription', async () => ok(await clinicsService.getSubscription()), {
     summary: 'Get subscription status',
     tags: ['Clinics'],
     auth: 'bearer',
   });
-  router.put('/clinics/me/settings', () => ok(clinicsService.getCurrentClinic(), 'Pengaturan klinik diperbarui'), {
+  router.put('/clinics/me/settings', async () => ok(await clinicsService.getCurrentClinic(), 'Pengaturan klinik diperbarui'), {
     summary: 'Update clinic settings',
     tags: ['Clinics'],
     auth: 'bearer',
     subscriptionRequired: true,
   });
-  router.put('/clinics/me/public-page', () => ok(clinicsService.getPublicPage(), 'Halaman publik diperbarui'), {
+  router.put('/clinics/me/public-page', async () => {
+    const clinic = await clinicsService.getCurrentClinic();
+    return ok(await clinicsService.getPublicPage(clinic.slug), 'Halaman publik diperbarui');
+  }, {
     summary: 'Update public clinic page',
     tags: ['Clinics'],
     auth: 'bearer',
     subscriptionRequired: true,
   });
-  router.put(
-    '/clinics/me/midtrans',
-    async ({ body }) => ok(await clinicsService.saveMidtransCredentials(body as { serverKey: string; clientKey: string; merchantId?: string }), 'Credential Midtrans klinik berhasil disimpan'),
-    {
-      summary: 'Update clinic Midtrans credentials',
-      description: 'Simpan credential Midtrans klinik secara terenkripsi. Frontend hanya menerima status setup.',
-      tags: ['Clinics'],
-      auth: 'bearer',
-      subscriptionRequired: true,
-    },
-  );
 
   router.get('/app/guarded', () => {
     const guard = guardSubscription('TRIAL');

@@ -1,8 +1,7 @@
 import { beforeEach } from 'bun:test';
-import { resetInMemoryDb } from './in-memory-db';
 
-export function setupInMemoryTest() {
+export function setupDatabaseTest() {
   beforeEach(() => {
-    resetInMemoryDb();
+    process.env.DEFAULT_CLINIC_ID = '11111111-1111-1111-1111-111111111111';
   });
 }

@@ -3,13 +3,29 @@ import type {
   ClinicSummary,
   SubscriptionSummary,
 } from '@mediklinik/types';
-import { canUseSupabaseRepositories, getSupabaseAdminClient } from '../shared/supabase-client';
+import { getSupabaseAdminClient } from '../shared/supabase-client';
 import { getAuthContext } from '../shared/request-context';
-import { CredentialEncryptionService } from './credential-encryption.service';
 
 export class ClinicsService {
-  private readonly encryption = new CredentialEncryptionService();
-  private midtransConfigured = false;
+  private mapClinicSummary(clinic: {
+    id: string;
+    slug: string;
+    name: string;
+    subscription_plan: ClinicSummary['subscriptionPlan'];
+    subscription_status: ClinicSummary['subscriptionStatus'];
+    trial_expires_at: string | null;
+    subscription_expires_at: string | null;
+  }): ClinicSummary {
+    return {
+      id: clinic.id,
+      slug: clinic.slug,
+      name: clinic.name,
+      subscriptionPlan: clinic.subscription_plan,
+      subscriptionStatus: clinic.subscription_status,
+      trialExpiresAt: clinic.trial_expires_at,
+      subscriptionExpiresAt: clinic.subscription_expires_at,
+    };
+  }
 
   async listAccessibleClinics(): Promise<ClinicSummary[]> {
     const auth = getAuthContext();
@@ -17,125 +33,116 @@ export class ClinicsService {
       throw new Error('Unauthorized.');
     }
 
-    if (canUseSupabaseRepositories()) {
-      let query = getSupabaseAdminClient()
-        .from('clinics')
-        .select('id, slug, name, subscription_plan, subscription_status, trial_expires_at, subscription_expires_at, midtrans_server_key_encrypted')
-        .order('created_at', { ascending: true });
+    let query = getSupabaseAdminClient()
+      .from('clinics')
+      .select('id, slug, name, subscription_plan, subscription_status, trial_expires_at, subscription_expires_at')
+      .order('created_at', { ascending: true });
 
-      if (auth.role !== 'SUPER_ADMIN') {
-        if (!auth.clinicId) {
-          throw new Error('Clinic context tidak ditemukan untuk user ini.');
-        }
-        query = query.eq('id', auth.clinicId);
+    if (auth.role !== 'SUPER_ADMIN') {
+      if (!auth.clinicId) {
+        throw new Error('Clinic context tidak ditemukan untuk user ini.');
       }
-
-      const { data, error } = await query;
-      if (error) {
-        throw new Error(`Gagal mengambil data klinik: ${error.message}`);
-      }
-
-      return (data ?? []).map((clinic) => ({
-        id: clinic.id,
-        slug: clinic.slug,
-        name: clinic.name,
-        subscriptionPlan: clinic.subscription_plan,
-        subscriptionStatus: clinic.subscription_status,
-        trialExpiresAt: clinic.trial_expires_at,
-        subscriptionExpiresAt: clinic.subscription_expires_at,
-        isMidtransConfigured: Boolean(clinic.midtrans_server_key_encrypted),
-      }));
+      query = query.eq('id', auth.clinicId);
     }
 
-    if (auth.role === 'SUPER_ADMIN') {
-      return [
-        {
-          id: 'clinic_demo',
-          slug: 'klinik-sehat',
-          name: 'Klinik Sehat Sentosa',
-          subscriptionPlan: 'CLINIC',
-          subscriptionStatus: 'TRIAL',
-          trialExpiresAt: '2026-06-23T00:00:00.000Z',
-          subscriptionExpiresAt: null,
-          isMidtransConfigured: this.midtransConfigured,
-        },
-        {
-          id: 'clinic_expired',
-          slug: 'klinik-expired',
-          name: 'Klinik Masa Berlalu',
-          subscriptionPlan: 'STARTER',
-          subscriptionStatus: 'EXPIRED',
-          trialExpiresAt: null,
-          subscriptionExpiresAt: '2026-06-02T00:00:00.000Z',
-          isMidtransConfigured: false,
-        },
-      ];
+    const { data, error } = await query;
+    if (error) {
+      throw new Error(`Gagal mengambil data klinik: ${error.message}`);
     }
 
-    return [this.getCurrentClinic()];
+    return (data ?? []).map((clinic) => this.mapClinicSummary(clinic));
   }
 
-  getCurrentClinic(): ClinicSummary {
+  async getCurrentClinic(): Promise<ClinicSummary> {
+    const auth = getAuthContext();
+    if (!auth) {
+      throw new Error('Unauthorized.');
+    }
+
+    if (auth.role === 'SUPER_ADMIN' && !auth.clinicId) {
+      throw new Error('SUPER_ADMIN harus memilih klinik untuk endpoint /clinics/me.');
+    }
+
+    if (!auth.clinicId) {
+      throw new Error('Clinic context tidak ditemukan untuk user ini.');
+    }
+
+    const { data, error } = await getSupabaseAdminClient()
+      .from('clinics')
+      .select('id, slug, name, subscription_plan, subscription_status, trial_expires_at, subscription_expires_at')
+      .eq('id', auth.clinicId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Gagal mengambil klinik aktif: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('Klinik aktif tidak ditemukan.');
+    }
+
+    return this.mapClinicSummary(data);
+  }
+
+  async getSubscription(): Promise<SubscriptionSummary> {
+    const clinic = await this.getCurrentClinic();
+    const targetDate = clinic.subscriptionExpiresAt ?? clinic.trialExpiresAt;
+    const daysRemaining = targetDate
+      ? Math.max(0, Math.ceil((new Date(targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+      : 0;
+
     return {
-      id: 'clinic_demo',
-      slug: 'klinik-sehat',
-      name: 'Klinik Sehat Sentosa',
-      subscriptionPlan: 'CLINIC',
-      subscriptionStatus: 'TRIAL',
-      trialExpiresAt: '2026-06-23T00:00:00.000Z',
-      subscriptionExpiresAt: null,
-      isMidtransConfigured: this.midtransConfigured,
+      status: clinic.subscriptionStatus,
+      plan: clinic.subscriptionPlan,
+      trialExpiresAt: clinic.trialExpiresAt,
+      subscriptionExpiresAt: clinic.subscriptionExpiresAt,
+      daysRemaining,
     };
   }
 
-  getSubscription(): SubscriptionSummary {
+  async getPublicPage(slug: string): Promise<ClinicPublicPage> {
+    const { data, error } = await getSupabaseAdminClient()
+      .from('clinics')
+      .select('id, slug, name, public_description, public_address, public_phone, public_open_hours, subscription_status, is_public_page_visible')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (error) throw new Error(`Gagal mengambil halaman publik klinik: ${error.message}`);
+    if (!data) throw new Error('Klinik tidak ditemukan.');
     return {
-      status: 'TRIAL',
-      plan: 'CLINIC',
-      trialExpiresAt: '2026-06-23T00:00:00.000Z',
-      subscriptionExpiresAt: null,
-      daysRemaining: 14,
+      id: data.id,
+      slug: data.slug,
+      name: data.name,
+      description: data.public_description ?? '',
+      address: data.public_address ?? '',
+      phone: data.public_phone ?? '',
+      openHours: data.public_open_hours ?? {},
+      subscriptionStatus: data.subscription_status,
+      isPublicPageVisible: data.is_public_page_visible,
     };
   }
 
-  getPublicPage(): ClinicPublicPage {
-    return {
-      slug: 'klinik-sehat',
-      name: 'Klinik Sehat Sentosa',
-      description: 'Klinik keluarga dengan layanan umum, vaksin, dan konsultasi harian.',
-      address: 'Jl. Sehat No. 10, Jakarta',
-      phone: '021-555-0101',
-      openHours: {
-        mon: '08:00-17:00',
-        tue: '08:00-17:00',
-        wed: '08:00-17:00',
-        thu: '08:00-17:00',
-        fri: '08:00-17:00',
-        sat: '08:00-13:00',
-        sun: 'Tutup',
-      },
-      subscriptionStatus: 'TRIAL',
-      isPublicPageVisible: true,
-    };
-  }
+  async register(input: { clinicName: string; ownerName: string; email: string; password: string }) {
+    const slug = input.clinicName.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const trialExpiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: clinic, error: clinicError } = await getSupabaseAdminClient().from('clinics').insert({
+      name: input.clinicName,
+      slug,
+      subscription_status: 'TRIAL',
+      subscription_plan: 'CLINIC',
+      trial_expires_at: trialExpiresAt,
+    }).select('id').single();
+    if (clinicError || !clinic) throw new Error(`Gagal membuat klinik: ${clinicError?.message ?? 'insert gagal.'}`);
 
-  async saveMidtransCredentials(input: { serverKey: string; clientKey: string; merchantId?: string }) {
-    if (!input.serverKey || !input.clientKey) throw new Error('Server key dan client key Midtrans wajib diisi.');
-    const encryptedServerKey = this.encryption.encrypt(input.serverKey);
-    const encryptedClientKey = this.encryption.encrypt(input.clientKey);
-    if (canUseSupabaseRepositories()) {
-      const clinicId = getAuthContext()?.clinicId;
-      if (!clinicId) {
-        throw new Error('Clinic context tidak ditemukan untuk menyimpan credential Midtrans.');
-      }
-      const { error } = await getSupabaseAdminClient().from('clinics').update({
-        midtrans_server_key_encrypted: encryptedServerKey,
-        midtrans_client_key_encrypted: encryptedClientKey,
-        merchant_id: input.merchantId,
-      }).eq('id', clinicId);
-      if (error) throw new Error(`Gagal menyimpan credential Midtrans: ${error.message}`);
-    }
-    this.midtransConfigured = true;
-    return { isMidtransConfigured: true };
+    const passwordHash = await Bun.password.hash(input.password, { algorithm: 'bcrypt' });
+    const { data: user, error: userError } = await getSupabaseAdminClient().from('users').insert({
+      clinic_id: clinic.id, email: input.email, password_hash: passwordHash, role: 'ADMIN', is_active: true,
+    }).select('id').single();
+    if (userError || !user) throw new Error(`Gagal membuat pemilik klinik: ${userError?.message ?? 'insert gagal.'}`);
+
+    const { error: profileError } = await getSupabaseAdminClient().from('profiles').insert({ user_id: user.id, full_name: input.ownerName });
+    if (profileError) throw new Error(`Gagal membuat profil pemilik: ${profileError.message}`);
+    const { error: ownerError } = await getSupabaseAdminClient().from('clinics').update({ owner_user_id: user.id }).eq('id', clinic.id);
+    if (ownerError) throw new Error(`Gagal menetapkan pemilik klinik: ${ownerError.message}`);
+    return { clinicId: clinic.id, ownerUserId: user.id, subscriptionStatus: 'TRIAL' as const };
   }
 }

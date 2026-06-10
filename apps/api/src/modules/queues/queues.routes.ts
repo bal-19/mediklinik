@@ -48,14 +48,16 @@ export function registerQueueRoutes(router: ApiRouter) {
 
 function parseRegisterQueueBody(body: unknown) {
   const payload = body as { patientId?: string } | undefined;
+  if (!payload?.patientId) throw new Error('patientId wajib diisi.');
   return {
-    patientId: payload?.patientId ?? 'patient_unknown',
+    patientId: payload.patientId,
   };
 }
 
 function parseQueueStatusBody(body: unknown) {
   const payload = body as { status?: 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'DONE' | 'SKIP' } | undefined;
+  if (!payload?.status) throw new Error('status wajib diisi.');
   return {
-    status: payload?.status ?? 'WAITING',
+    status: payload.status,
   };
 }

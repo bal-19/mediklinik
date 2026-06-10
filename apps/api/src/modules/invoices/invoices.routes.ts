@@ -12,7 +12,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
     auth: 'bearer',
     subscriptionRequired: true,
   });
-  router.get('/invoices/:id', async ({ params }) => ok(await invoicesService.getById(params.id ?? 'inv_1')), {
+  router.get('/invoices/:id', async ({ params }) => ok(await invoicesService.getById(requireParam(params.id, 'id'))), {
     summary: 'Get invoice detail',
     tags: ['Invoices'],
     auth: 'bearer',
@@ -39,7 +39,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
     },
   });
   router.post('/invoices/:id/pay-cash', async ({ params, body }) => ok(await invoicesService.payCash(requireParam(params.id, 'id'), parsePayCashBody(body)), 'Pembayaran tunai berhasil dicatat'), {
-    summary: 'Pay invoice by cash',
+    summary: 'Mark invoice as manually paid',
     tags: ['Invoices'],
     auth: 'bearer',
     subscriptionRequired: true,
@@ -50,7 +50,7 @@ export function registerInvoiceRoutes(router: ApiRouter) {
           schema: {
             type: 'object',
             properties: {
-              amountPaid: { type: 'number', example: 156000 },
+              amountPaid: { type: 'number', example: 156000, description: 'Jumlah yang dicatat manual oleh staf atau dokter.' },
             },
             required: ['amountPaid'],
           },
@@ -58,17 +58,6 @@ export function registerInvoiceRoutes(router: ApiRouter) {
       },
     },
   });
-  router.post(
-    '/invoices/:id/pay-online',
-    async ({ params }) => ok(await invoicesService.payOnline(requireParam(params.id, 'id')), 'Transaksi pembayaran online berhasil dibuat'),
-    {
-      summary: 'Create online payment transaction',
-      description: 'Buat transaksi Midtrans Snap untuk invoice pasien menggunakan credential Midtrans milik klinik aktif.',
-      tags: ['Invoices'],
-      auth: 'bearer',
-      subscriptionRequired: true,
-    },
-  );
   router.post('/invoices/:id/pdf', async ({ params }) => invoicesService.createPdf(requireParam(params.id, 'id')), {
     summary: 'Generate invoice PDF', description: 'Menghasilkan dokumen PDF invoice untuk diunduh atau dicetak.', tags: ['Invoices'], auth: 'bearer', subscriptionRequired: true,
     responses: { '200': { description: 'PDF invoice', content: { 'application/pdf': { schema: { type: 'string', contentEncoding: 'binary' } } } } },
@@ -77,8 +66,9 @@ export function registerInvoiceRoutes(router: ApiRouter) {
 
 function parseCreateInvoiceBody(body: unknown) {
   const payload = body as { medicalRecordId?: string } | undefined;
+  if (!payload?.medicalRecordId) throw new Error('medicalRecordId wajib diisi.');
   return {
-    medicalRecordId: payload?.medicalRecordId ?? 'mr_1',
+    medicalRecordId: payload.medicalRecordId,
   };
 }
 

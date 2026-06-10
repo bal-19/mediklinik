@@ -1,4 +1,5 @@
 import { AuthService } from './auth.service';
+import type { Role } from '@mediklinik/types';
 import { ok } from '../shared/response';
 import type { ApiRouter } from '../shared/api-router';
 
@@ -7,11 +8,11 @@ const authService = new AuthService();
 export function registerAuthRoutes(router: ApiRouter) {
   router.post(
     '/auth/login',
-    () =>
+    async ({ body }) =>
       ok(
-        authService.login({
-          email: 'admin@mediklinik.id',
-          password: 'password',
+        await authService.login({
+          email: requireString(body, 'email'),
+          password: requireString(body, 'password'),
         }),
         'Login berhasil',
       ),
@@ -33,13 +34,14 @@ export function registerAuthRoutes(router: ApiRouter) {
 
   router.post(
     '/auth/register',
-    () =>
+    async ({ body }) =>
       ok(
-        authService.register({
-          email: 'patient@example.com',
-          password: 'password',
-          fullName: 'Pasien Demo',
-          role: 'PATIENT',
+        await authService.register({
+          email: requireString(body, 'email'),
+          password: requireString(body, 'password'),
+          fullName: requireString(body, 'fullName'),
+          role: ((body as { role?: Role } | undefined)?.role ?? 'PATIENT'),
+          clinicId: typeof (body as { clinicId?: unknown } | undefined)?.clinicId === 'string' ? (body as { clinicId: string }).clinicId : undefined,
         }),
         'Registrasi berhasil',
       ),
@@ -53,7 +55,13 @@ export function registerAuthRoutes(router: ApiRouter) {
 
   router.post(
     '/auth/refresh',
-    () => ok(authService.refresh('refresh_user_demo'), 'Token diperbarui'),
+    async ({ body }) =>
+      ok(
+        await authService.refresh(
+          requireString(body, 'refreshToken'),
+        ),
+        'Token diperbarui',
+      ),
     {
       summary: 'Refresh token',
       description: 'Rotasi access token menggunakan refresh token yang masih valid.',
@@ -69,4 +77,10 @@ export function registerAuthRoutes(router: ApiRouter) {
       },
     },
   );
+}
+
+function requireString(body: unknown, field: string) {
+  const value = (body as Record<string, unknown> | undefined)?.[field];
+  if (typeof value !== 'string' || !value.trim()) throw new Error(`${field} wajib diisi.`);
+  return value.trim();
 }

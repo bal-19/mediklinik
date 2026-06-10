@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { QueuesService } from '../src/modules/queues/queues.service';
-import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+import { setupDatabaseTest } from '../src/modules/shared/test-utils';
 
-setupInMemoryTest();
+setupDatabaseTest();
 
 describe('QueuesService', () => {
   test('register creates a new waiting queue number', async () => {

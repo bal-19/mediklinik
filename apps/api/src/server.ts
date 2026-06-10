@@ -12,7 +12,6 @@ import { registerReportRoutes } from './modules/reports/reports.routes';
 import { registerSubscriptionRoutes } from './modules/subscriptions/subscriptions.routes';
 import { registerUserRoutes } from './modules/users/users.routes';
 import { registerPrescriptionRoutes } from './modules/prescriptions/prescriptions.routes';
-import { registerPaymentRoutes } from './modules/payments/payments.routes';
 import { registerPushRoutes } from './modules/push/push.routes';
 
 export function createApp() {
@@ -44,7 +43,6 @@ export function createApp() {
   registerMedicalRecordRoutes(router);
   registerPublicClinicRoutes(router);
   registerPrescriptionRoutes(router);
-  registerPaymentRoutes(router);
   registerPushRoutes(router);
   registerQueueRoutes(router);
   registerReportRoutes(router);

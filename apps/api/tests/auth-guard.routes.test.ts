@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { createApp } from '../src/server';
 import { createAccessToken } from '../src/modules/shared/token';
-import { setupInMemoryTest } from '../src/modules/shared/test-utils';
+import { setupDatabaseTest } from '../src/modules/shared/test-utils';
 
-setupInMemoryTest();
+setupDatabaseTest();
 
 describe('Route auth guard', () => {
   test('rejects protected route without bearer token', async () => {
@@ -18,10 +18,10 @@ describe('Route auth guard', () => {
   test('rejects protected route when subscription expired', async () => {
     const app = createApp();
     const token = createAccessToken({
-      sub: 'user_demo',
+      sub: 'aaaaaaaa-1111-1111-1111-111111111101',
       email: 'admin@mediklinik.id',
       role: 'ADMIN',
-      clinicId: 'clinic_demo',
+      clinicId: '11111111-1111-1111-1111-111111111111',
       subscriptionStatus: 'EXPIRED',
       iat: 1,
       exp: 2,

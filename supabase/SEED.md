@@ -33,5 +33,4 @@ Password123!
 - Invoice `UNPAID` dan `PAID`.
 - Riwayat pembayaran subscription aktif dan expired.
 
-> Auth API saat ini masih memakai session demo. Akun seed sudah memiliki password hash
-> bcrypt-compatible dan siap digunakan setelah auth persistence dihubungkan ke tabel `users`.
+> Auth API membaca akun dan password hash bcrypt-compatible langsung dari tabel `users`.

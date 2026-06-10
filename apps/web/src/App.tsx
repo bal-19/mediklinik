@@ -10,6 +10,7 @@ const QueuesPage = lazy(() => import('./pages/admin/QueuesPage').then((module) =
 const MedicinesPage = lazy(() => import('./pages/admin/MedicinesPage').then((module) => ({ default: module.MedicinesPage })));
 const InvoicesPage = lazy(() => import('./pages/admin/InvoicesPage').then((module) => ({ default: module.InvoicesPage })));
 const BillingPage = lazy(() => import('./pages/admin/BillingPage').then((module) => ({ default: module.BillingPage })));
+const ReportsPage = lazy(() => import('./pages/admin/ReportsPage').then((module) => ({ default: module.ReportsPage })));
 const MedicalRecordsPage = lazy(() => import('./pages/doctor/MedicalRecordsPage').then((module) => ({ default: module.MedicalRecordsPage })));
 const PatientProfilePage = lazy(() => import('./pages/patient/PatientProfilePage').then((module) => ({ default: module.PatientProfilePage })));
 
@@ -28,6 +29,7 @@ export function App() {
           <Route path="queues" element={<QueuesPage />} />
           <Route path="medicines" element={<MedicinesPage />} />
           <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="reports" element={<ReportsPage />} />
           <Route path="billing" element={<BillingPage />} />
           <Route path="billing/blocked" element={<BillingPage blocked />} />
           <Route path="medical-records" element={<MedicalRecordsPage />} />

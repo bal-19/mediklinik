@@ -127,6 +127,9 @@ function validateRouteAccess(route: RouteDefinition, authContext: AuthContext | 
   }
 
   if (route.meta?.subscriptionRequired && authContext) {
+    if (authContext.role === 'SUPER_ADMIN') {
+      return null;
+    }
     if (authContext.subscriptionStatus !== 'TRIAL' && authContext.subscriptionStatus !== 'ACTIVE') {
       return Response.json(
         {

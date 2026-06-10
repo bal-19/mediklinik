@@ -17,7 +17,7 @@ export function registerSubscriptionRoutes(router: ApiRouter) {
   );
   router.post(
     '/subscriptions/webhook',
-    ({ body }) => ok(subscriptionsService.webhook(body as import('@mediklinik/types').MidtransWebhookPayload), 'Webhook subscription berhasil diproses'),
+    async ({ body }) => ok(await subscriptionsService.webhook(body as import('@mediklinik/types').MidtransWebhookPayload), 'Webhook subscription berhasil diproses'),
     {
       summary: 'Handle subscription webhook',
       description: 'Endpoint webhook Midtrans platform untuk mengaktifkan atau memperpanjang subscription klinik.',
@@ -25,7 +25,7 @@ export function registerSubscriptionRoutes(router: ApiRouter) {
       auth: 'public',
     },
   );
-  router.get('/subscriptions/payments', () => ok(subscriptionsService.history()), {
+  router.get('/subscriptions/payments', async () => ok(await subscriptionsService.history()), {
     summary: 'List subscription payment history', tags: ['Subscriptions'], auth: 'bearer',
   });
 }

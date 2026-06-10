@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
-export function useQueueRealtime(clinicId?: string) {
+export function useQueueRealtime(clinicId?: string | null) {
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!clinicId || !import.meta.env.VITE_SUPABASE_URL) return;

@@ -84,7 +84,7 @@ export function createOpenApiDocument(routes: RouteDefinition[]) {
         RefreshRequest: {
           type: 'object',
           properties: {
-            refreshToken: { type: 'string', example: 'refresh_user_demo' },
+            refreshToken: { type: 'string', example: 'refresh_aaaaaaaa-1111-1111-1111-111111111101' },
           },
           required: ['refreshToken'],
         },

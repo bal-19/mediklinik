@@ -1,0 +1,2 @@
+create unique index if not exists idx_subscription_payments_midtrans_order_id
+on public.subscription_payments(midtrans_order_id);

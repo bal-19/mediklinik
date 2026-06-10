@@ -15,7 +15,7 @@
    `POST /auth/refresh`
 4. Pada implementasi frontend penuh, refresh token dipakai untuk rotasi access token tanpa memaksa login ulang.
 
-Access token demo saat ini membawa `clinicId` dan `subscriptionStatus`, sehingga repository Supabase dapat membaca tenant context langsung dari bearer token.
+Access token membawa `clinicId` dan `subscriptionStatus` dari user dan klinik yang tersimpan di Supabase.
 
 ## Route publik vs protected
 - Route publik:
@@ -28,11 +28,8 @@ Access token demo saat ini membawa `clinicId` dan `subscriptionStatus`, sehingga
 - Flow pembayaran pasien memakai credential Midtrans milik klinik aktif.
 - Credential sensitif tidak dikirim ke frontend.
 
-## Repository provider
-- `REPOSITORY_PROVIDER=memory`
-  memakai repository in-memory, cocok untuk development cepat dan test.
-- `REPOSITORY_PROVIDER=supabase`
-  menyiapkan jalur repository Supabase.
+## Repository database
+- Semua repository runtime menggunakan Supabase.
 - `DEFAULT_CLINIC_ID`
-  menjadi fallback lokal jika request belum membawa tenant context.
-- Jika provider diset ke `supabase` tetapi `SUPABASE_URL` atau `SUPABASE_SERVICE_ROLE_KEY` belum diisi, sistem akan fallback ke `memory` agar boot lokal tetap aman.
+  dapat dipakai oleh integration test atau command internal yang tidak membawa tenant context.
+- `SUPABASE_URL` dan `SUPABASE_SERVICE_ROLE_KEY` wajib tersedia saat API mengakses data.

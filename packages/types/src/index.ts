@@ -43,6 +43,25 @@ export interface AuthSession {
   user: DashboardUser;
 }
 
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface ClinicRegisterInput {
+  clinicName: string;
+  ownerName: string;
+  email: string;
+  password: string;
+}
+
+export interface PatientRegisterInput {
+  fullName: string;
+  email: string;
+  password: string;
+  clinicId: string;
+}
+
 export interface ClinicSummary {
   id: string;
   slug: string;
@@ -51,10 +70,10 @@ export interface ClinicSummary {
   subscriptionPlan: SubscriptionPlan;
   trialExpiresAt: string | null;
   subscriptionExpiresAt: string | null;
-  isMidtransConfigured: boolean;
 }
 
 export interface ClinicPublicPage {
+  id: string;
   slug: string;
   name: string;
   description: string;
